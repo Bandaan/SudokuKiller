@@ -10,12 +10,7 @@ AI Solver for sudoku with the help of a hill-climbing algorithm
 ## Repo hierarchi
 
 ### SudokuKiller
-- [Klasse1.cs](/Broncode/Namespace1/Klasse1.cs)
-- [Klasse2.cs](/Broncode/Namespace1/Klasse2.cs)
-
-### Namespace2
-- [Klasse3.cs](/Broncode/Namespace2/Klasse3.cs)
+- [Program.cs](/SudokuKiller/Program.cs)
 
 ## Tests
-- [TestKlasse1.cs](/Tests/TestKlasse1.cs)
-- [TestKlasse2.cs](/Tests/TestKlasse2.cs)
+- [TestKlasse1.cs](/Tests/unitTest1.cs)
