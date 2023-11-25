@@ -2,11 +2,18 @@
 
 namespace SudokuKiller
 {
-    class Program
+    public class Program
     {
         static void Main()
         {
             Console.WriteLine("Hello, World!");
         }
+
+        public bool testFunc()
+        {
+            return true;
+        }
     }
+    
+    
 }
