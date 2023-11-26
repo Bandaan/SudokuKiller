@@ -4,7 +4,7 @@ namespace SudokuKiller
 {
     public class Getal
     {
-        private int Number { get; }
+        public int Number { get; set; }
         private bool Fixed { get; set; }
         
         public Getal(int number, bool vast)
