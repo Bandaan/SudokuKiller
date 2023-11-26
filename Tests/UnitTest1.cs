@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace Tests
+namespace SudokuKiller.Tests
 {
     [TestFixture]
     public class ProgramTests
