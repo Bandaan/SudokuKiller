@@ -2,18 +2,12 @@
 
 namespace SudokuKiller
 {
-    public class Program
+    class Program
     {
         static void Main()
         {
-            Console.WriteLine("Hello, World!");
-        }
-
-        public bool testFunc()
-        {
-            return true;
+            string[] input = Console.ReadLine().Split(" ");
+            Sudoku sudoku = ParseHelper.ParseSudoku(input);
         }
     }
-    
-    
 }
