@@ -10,9 +10,9 @@ public static class ParseHelper
             Getal[] miniSudoku = new Getal[9];
             for (int j = 0; j < 9; j++)
             {
-                if (int.Parse(input[i * 9 + j]).Equals(0))
+                if (int.Parse(input[i * 9 + j]) == 0)
                 {
-                    miniSudoku[j] = new Getal(int.Parse(input[i * 9 + j]), false);
+                    miniSudoku[j] = new Getal(0, false);
                 }
                 else
                 {
@@ -34,21 +34,31 @@ public static class ParseHelper
             }
         }
     }
-
+    
     static MiniSudoku FillNumbers(Getal[] miniSudoku)
     {
+        // DEZE FUNCTIE MOET NOG WORDEN AFGEMAAKT
+        // ALLE NUMMERS MET 0 OMWISSELN MET NUMMER UIT "remainingnumbers"
+        
         int index = -1;
         var remainingNumbers = FindRemainingNumbers(miniSudoku);
         MiniSudoku newMini = new MiniSudoku();
+    
         for (int j = 0; j < miniSudoku.Length; j++)
         {
             if (miniSudoku[j].Number.Equals(0))
             {
                 index++;
-                miniSudoku[j].Number = remainingNumbers.ElementAt(index);
-                newMini.AddGetal(miniSudoku[j]);
+                
+                if (index < remainingNumbers.Count())
+                {
+                    miniSudoku[j].Number = remainingNumbers.ElementAt(index);
+                    newMini.AddGetal(miniSudoku[j]);
+                }
             }
         }
+    
         return newMini;
     }
+
 }
