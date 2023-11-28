@@ -2,7 +2,7 @@
 {
     public class MiniSudoku
     {
-        private Getal[,] MiniSudokuList = new Getal[3, 3];
+        public Getal[,] MiniSudokuList = new Getal[3, 3];
         private int x, y;
 
         public MiniSudoku()
