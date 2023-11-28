@@ -1,5 +1,6 @@
 ﻿namespace SudokuKiller
 {
+    // aanpassing poep
     public class MiniSudoku
     {
         private Getal[,] MiniSudokuList = new Getal[3, 3];
@@ -10,6 +11,8 @@
             x = 0;
             y = 0;
         }
+
+        // nog een change
 
         public void AddGetal(Getal getal)
         {
