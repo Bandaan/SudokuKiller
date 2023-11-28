@@ -16,7 +16,7 @@
 
         public void AddGetal(Getal getal)
         {
-            MiniSudokuList[x, y] = getal;
+            MiniSudokuList[y, x] = getal;
             IncrementIndices();
         }
         

@@ -18,17 +18,10 @@ public static class ParseHelper
         for (int i = 0; i < 9; i++)
         {
             int[] miniSudoku = new int[9];
-
-            for (int k = 0; k < 3; k++)
+            for (int j = 0; j < 9; j++)
             {
-                for (int j = 0; j < 3; j++)
-                {
-                    miniSudoku[j] = int.Parse(input[k * 9 + j]);
-                    Console.Write(miniSudoku[j]);
-                }
-                
+                miniSudoku[j] = int.Parse(input[(i / 3 * 3 + j / 3) * 9 + i % 3 * 3 + j % 3]);
             }
-            Console.WriteLine("========");
 
             sudoku.AddMiniSudoku(FillNumbers(miniSudoku));
         }
@@ -45,7 +38,6 @@ public static class ParseHelper
                 numbers.Add(i);
             }
         }
-        numbers.Add(0);
         return numbers;
     }
     
@@ -54,15 +46,14 @@ public static class ParseHelper
         MiniSudoku newMini = new MiniSudoku();
         List<int> remainingNumbers = FindRemainingNumbers(miniSudoku);
 
-        int index = 0;
+        int index = -1;
         foreach (var number in miniSudoku)
         {
             newMini.AddGetal((number != 0)
                 ? new Getal(number, true)
                 : new Getal(remainingNumbers[++index], false));
         }
-        
-        
+
         return newMini;
     }
 
