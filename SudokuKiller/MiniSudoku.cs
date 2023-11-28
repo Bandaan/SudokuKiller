@@ -12,6 +12,8 @@
             y = 0;
         }
 
+        // nog een change
+
         public void AddGetal(Getal getal)
         {
             MiniSudokuList[x, y] = getal;
