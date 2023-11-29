@@ -3,7 +3,7 @@
     // aanpassing poep
     public class MiniSudoku
     {
-        private Getal[,] MiniSudokuList = new Getal[3, 3];
+        public Getal[,] MiniSudokuList = new Getal[3, 3];
         private int x, y;
 
         public MiniSudoku()
@@ -16,7 +16,7 @@
 
         public void AddGetal(Getal getal)
         {
-            MiniSudokuList[x, y] = getal;
+            MiniSudokuList[y, x] = getal;
             IncrementIndices();
         }
         

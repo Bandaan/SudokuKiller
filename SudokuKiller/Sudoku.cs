@@ -13,7 +13,7 @@
 
         public void AddMiniSudoku(MiniSudoku miniSudoku)
         {
-            SudokuList[x, y] = miniSudoku;
+            SudokuList[y, x] = miniSudoku;
             IncrementIndices();
         }
         

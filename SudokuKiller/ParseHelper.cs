@@ -1,63 +1,59 @@
 ﻿namespace SudokuKiller;
 
+/// <summary>
+/// Represents a helper class that provides parse functions for the sudoku.
+/// </summary>
 public static class ParseHelper
 {
+    /// <summary>
+    /// Adds two numbers and returns the result.
+    /// </summary>
+    /// <param name="a">The first number.</param>
+    /// <param name="b">The second number.</param>
+    /// <returns>The sum of the two numbers.</returns>
     public static Sudoku ParseSudoku(string[] input)
     {
         Sudoku sudoku = new Sudoku();
+        
         for (int i = 0; i < 9; i++)
         {
-            Getal[] miniSudoku = new Getal[9];
+            int[] miniSudoku = new int[9];
             for (int j = 0; j < 9; j++)
             {
-                if (int.Parse(input[i * 9 + j]) == 0)
-                {
-                    miniSudoku[j] = new Getal(0, false);
-                }
-                else
-                {
-                    miniSudoku[j] = new Getal(int.Parse(input[i * 9 + j]), true);
-                }
+                miniSudoku[j] = int.Parse(input[(i / 3 * 3 + j / 3) * 9 + i % 3 * 3 + j % 3]);
             }
+
             sudoku.AddMiniSudoku(FillNumbers(miniSudoku));
         }
         return sudoku;
     }
 
-    static IEnumerable<int> FindRemainingNumbers(Getal[] minisoduku)
+    public static List<int> FindRemainingNumbers(int[] minisoduku)
     {
+        List<int> numbers = new List<int>();
         for (int i = 1; i <= 9; i++)
         {
-            if (!minisoduku.Any(getal => getal.Number == i))
+            if (!minisoduku.Contains(i))
             {
-                yield return i;
+                numbers.Add(i);
             }
         }
+        return numbers;
     }
     
-    static MiniSudoku FillNumbers(Getal[] miniSudoku)
+    public static MiniSudoku FillNumbers(int[] miniSudoku)
     {
-        // DEZE FUNCTIE MOET NOG WORDEN AFGEMAAKT
-        // ALLE NUMMERS MET 0 OMWISSELN MET NUMMER UIT "remainingnumbers"
-        
-        int index = -1;
-        var remainingNumbers = FindRemainingNumbers(miniSudoku);
         MiniSudoku newMini = new MiniSudoku();
-    
-        for (int j = 0; j < miniSudoku.Length; j++)
+        List<int> remainingNumbers = FindRemainingNumbers(miniSudoku);
+
+        int index = -1;
+        foreach (var number in miniSudoku)
         {
-            if (miniSudoku[j].Number.Equals(0))
-            {
-                index++;
-                
-                if (index < remainingNumbers.Count())
-                {
-                    miniSudoku[j].Number = remainingNumbers.ElementAt(index);
-                    newMini.AddGetal(miniSudoku[j]);
-                }
-            }
+            newMini.AddGetal((number != 0)
+                ? new Getal(number, true)
+                : new Getal(remainingNumbers[++index], false));
         }
-    
+
         return newMini;
     }
 
