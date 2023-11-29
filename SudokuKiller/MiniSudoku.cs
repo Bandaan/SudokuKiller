@@ -33,5 +33,26 @@
                 }
             }
         }
+        
+        public IEnumerable<int> GetRow(int y)
+        {
+            int columns = MiniSudokuList.GetLength(1);
+            for (int col = 0; col < columns; col++)
+            {
+                yield return MiniSudokuList[y, col].Number;
+            }
+            
+        }
+        
+        public IEnumerable<int> GetColumn(int x)
+        {
+            int rows = MiniSudokuList.GetLength(0);
+            for (int row = 0; row < rows; row++)
+            {
+                yield return MiniSudokuList[row, x].Number;
+            }
+            
+        }
+        
     }
 }

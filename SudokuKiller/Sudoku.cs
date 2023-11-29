@@ -16,7 +16,7 @@
             SudokuList[y, x] = miniSudoku;
             IncrementIndices();
         }
-        
+
         private void IncrementIndices()
         {
             x++;
@@ -30,6 +30,40 @@
                 }
             }
         }
+
+        public int[] GetRow(int y)
+        {
+            int[] rowArray = new int[9];
+            int index = -1;
+            int columns = SudokuList.GetLength(1);
+            for (int col = 0; col < columns; col++)
+            {
+                foreach (var number in SudokuList[y / 3, col].GetRow(y % 3))
+                {
+                    index++;
+                    rowArray[index] = number;
+                }
+            }
+
+            return rowArray;
+        }
+
+        public int[] GetColumn(int x)
+        {
+            int[] columnArray = new int[9];
+            int index = -1;
+            int rows = SudokuList.GetLength(0);
+            for (int row = 0; row < rows; row++)
+            {
+                foreach (var number in SudokuList[row, x / 3].GetColumn(x % 3))
+                {
+                    index++;
+                    columnArray[index] = number;
+                }
+            }
+
+            return columnArray;
+
+        }
     }
-    
 }

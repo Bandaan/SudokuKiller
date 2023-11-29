@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace SudokuKiller.Tests
 {
     [TestFixture]
-    public class ProgramTests
+    public class ParseHelperUnitTests
     {
         [Test]
         public void TestFunc_ParseSudokuRemainingNumbers()
