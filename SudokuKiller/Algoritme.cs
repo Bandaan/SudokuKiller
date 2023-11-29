@@ -58,20 +58,20 @@ namespace SudokuKiller
                 //Loop door alle kolommen
                 for (int i = 0; i < 9; i++)
                 {
-                    int fout = FindError(this.sudoku.GetCollumn(i));
-                    evalColumns[i] = fout;
+                    //int fout = FindError(this.sudoku.GetCollumn(i));
+                    //evalColumns[i] = fout;
                 }
 
                 //Loop door alle rows
                 for (int i = 0; i < 9; i++)
                 {
-                    int fout = FindError(this.sudoku.GetRow(i));
-                    evalRows[i] = fout;
+                    //int fout = FindError(this.sudoku.GetRow(i));
+                    //evalRows[i] = fout;
                 }
             }
         }
 
-        public int FindError(int[] array)
+        public static int FindError(int[] array)
         {
             //Vind aantal dubbele in de array en return die
             int duplicates = 0;
