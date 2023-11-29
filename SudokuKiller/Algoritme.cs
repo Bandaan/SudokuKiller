@@ -35,10 +35,18 @@ namespace SudokuKiller
                 //Get the (first) smallest mistake from evalCell and the according swap
                 Tuple<int> smallestTuple = Swap(miniSudoku);
 
-                //Do the according swap
+                if (smallestTuple.Item1 <= this.evalSudoku)
+                {
+                    //Do the according swap
+                    //Update evalSudoku to this smallest evalCell
+                    this.evalSudoku = smallestTuple.Item1;
 
-                //Update evalSudoku to this smallest evalCell
-                this.evalSudoku = smallestTuple.Item1;
+                    //If it is equal to evalSudoku we need to add to a counter so that we're not stuck on a plateau
+                }
+                else
+                {
+                    //In deze minisudoku is er geen swap die de toestand verbeterd dus random walk of een counter?
+                }
             }
 
             //Nu is de fout 0 en willen we de sudoku omzetten in een string
@@ -49,25 +57,27 @@ namespace SudokuKiller
         {
             if (cell1 != null && cell2 != null)
             {
-                //Update de fout !!MAAR HOE????!!
+                //Update de fout
             }
             else
             {
-                //Vind de fout van de hele sudoku !!ALLEEN DE EERSTE KEER!!
+                //Vind de fout van de hele sudoku
 
                 //Loop door alle kolommen
                 for (int i = 0; i < 9; i++)
                 {
-                    //int fout = FindError(this.sudoku.GetCollumn(i));
-                    //evalColumns[i] = fout;
+                    int fout = FindError(this.sudoku.GetColumn(i));
+                    evalColumns[i] = fout;
                 }
 
                 //Loop door alle rows
                 for (int i = 0; i < 9; i++)
                 {
-                    //int fout = FindError(this.sudoku.GetRow(i));
-                    //evalRows[i] = fout;
+                    int fout = FindError(this.sudoku.GetRow(i));
+                    evalRows[i] = fout;
                 }
+
+                this.evalSudoku = CombineError();
             }
         }
 
@@ -90,6 +100,22 @@ namespace SudokuKiller
             return duplicates;
         }
 
+        private int CombineError()
+        {
+            int error = 0;
+            for (int i = 0; i < evalColumns.Length; i++)
+            {
+                error += evalColumns[i];
+            }
+
+            for (int j = 0; j < evalRows.Length; j++)
+            {
+                error += evalRows[j];
+            }
+
+            return error;
+        }
+
         private Tuple<int> Swap(MiniSudoku miniSudoku)
         {
             List<Tuple<int>> evalCell = new List<Tuple<int>>();
@@ -106,7 +132,19 @@ namespace SudokuKiller
 
         private string SudokuToString()
         {
-            return "";
+            string sudokuString = "";
+
+            for (int i = 0; i < 9; i++)
+            {
+                int[] row = this.sudoku.GetRow(i);
+                foreach (int j in row)
+                {
+                    sudokuString += $"{j} ";
+                }
+                sudokuString += "\n";
+            }
+
+            return sudokuString;
         }
     }
 }
