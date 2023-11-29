@@ -24,7 +24,7 @@ namespace SudokuKiller
         //Runt het algoritme en verandert het naar een string om uit te printen
         public string RunAlgoritme()
         {
-            VindFout(null, null);
+            FindEval(null, null);
 
             while (evalSudoku != 0)
             {
@@ -71,7 +71,7 @@ namespace SudokuKiller
             }
         }
 
-        private int FindError(int[] array)
+        public int FindError(int[] array)
         {
             //Vind aantal dubbele in de array en return die
             int duplicates = 0;
