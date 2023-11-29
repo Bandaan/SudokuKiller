@@ -78,7 +78,7 @@ namespace SudokuKiller
 
             for (int i = 0; i < array.Length; i++)
             {
-                int[] temp_array = array;
+                int[] temp_array = (int[])array.Clone();
                 temp_array[i] = 0;
 
                 if (temp_array.Contains(array[i]))
