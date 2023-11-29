@@ -2,7 +2,7 @@
 {
     public class Sudoku
     {
-        private MiniSudoku[,] SudokuList = new MiniSudoku[3, 3];
+        public MiniSudoku[,] SudokuList = new MiniSudoku[3, 3];
         private int x, y;
 
         public Sudoku()
