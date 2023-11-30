@@ -41,6 +41,7 @@ namespace SudokuKiller
 
                     //Update evalSudoku to this smallest evalCell
                     this.evalSudoku = smallestSwap.eval;
+                    //Also update the mistakes in evalColumns and evalRows
 
                     //If it is equal to evalSudoku we need to add to a counter so that we're not stuck on a plateau
                 }
