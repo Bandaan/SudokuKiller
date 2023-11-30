@@ -24,20 +24,21 @@ namespace SudokuKiller
         //Runt het algoritme en verandert het naar een string om uit te printen
         public string RunAlgoritme()
         {
-            FindEval(null, null, null);
+            evalSudoku = FindEval(null, null, null);
 
             while (evalSudoku != 0)
             {
                 //Select random miniSudoku
                 MiniSudoku miniSudoku = this.sudoku.SudokuList[rnd.Next(3), rnd.Next(3)];
 
-                //Do all permutations and add them to evalCell
-                //Get the (first) smallest mistake from evalCell and the according swap
+                //Do all permutations and suggest a swap
                 Swap smallestSwap = SwapSuggest(miniSudoku);
 
+                //Make swap if it is an improvement else we go on and increment a counter
                 if (smallestSwap.eval <= this.evalSudoku)
                 {
                     //Do the according swap
+
                     //Update evalSudoku to this smallest evalCell
                     this.evalSudoku = smallestSwap.eval;
 
@@ -53,12 +54,58 @@ namespace SudokuKiller
             return SudokuToString();
         }
 
-        private void FindEval(Tuple<int> cell1, Tuple<int> cell2, MiniSudoku miniSudoku)
+        private int FindEval(Tuple<int, int> cell1, Tuple<int, int> cell2, MiniSudoku miniSudoku)
         {
             if (cell1 != null && cell2 != null && miniSudoku != null)
             {
                 //Update de fout
 
+                int[] temp_array_columns = new int[evalColumns.Length];
+                Array.Copy(evalColumns, temp_array_columns, evalColumns.Length);
+                int[] temp_array_rows = new int[evalRows.Length];
+                Array.Copy(evalRows, temp_array_rows, evalRows.Length);
+
+                //X is hetzelfde dus 1 column en 2 rows checken
+                if (cell1.Item1 == cell2.Item1)
+                {
+                    int column = miniSudoku.x_pos*3 + cell1.Item1;
+                    temp_array_columns[column] = FindError(this.sudoku.GetColumn(column));
+
+                    int row_1 = miniSudoku.y_pos*3 + cell1.Item2;
+                    temp_array_rows[row_1] = FindError(this.sudoku.GetColumn(row_1));
+
+                    int row_2 = miniSudoku.y_pos*3 + cell2.Item2;
+                    temp_array_rows[row_2] = FindError(this.sudoku.GetColumn(row_2));
+                }
+                //Y is hetzelfde dus 2 columns en 1 row checken
+                else if (cell1.Item2 == cell2.Item2)
+                {
+                    int column_1 = miniSudoku.x_pos*3 + cell1.Item1;
+                    temp_array_columns[column_1] = FindError(this.sudoku.GetColumn(column_1));
+
+                    int column_2 = miniSudoku.x_pos*3 + cell1.Item1;
+                    temp_array_columns[column_2] = FindError(this.sudoku.GetColumn(column_2));
+
+                    int row = miniSudoku.y_pos*3 + cell1.Item2;
+                    temp_array_rows[row] = FindError(this.sudoku.GetColumn(row));
+                }
+                //Beide niet hetzelfde dus 2 columns en 2 rows checken
+                else
+                {
+                    int column_1 = miniSudoku.x_pos*3 + cell1.Item1;
+                    temp_array_columns[column_1] = FindError(this.sudoku.GetColumn(column_1));
+
+                    int column_2 = miniSudoku.x_pos*3 + cell1.Item1;
+                    temp_array_columns[column_2] = FindError(this.sudoku.GetColumn(column_2));
+
+                    int row_1 = miniSudoku.y_pos*3 + cell1.Item2;
+                    temp_array_rows[row_1] = FindError(this.sudoku.GetColumn(row_1));
+
+                    int row_2 = miniSudoku.y_pos*3 + cell2.Item2;
+                    temp_array_rows[row_2] = FindError(this.sudoku.GetColumn(row_2));
+                }
+
+                return CombineError(temp_array_columns, temp_array_rows);
             }
             else
             {
@@ -78,7 +125,7 @@ namespace SudokuKiller
                     evalRows[i] = fout;
                 }
 
-                this.evalSudoku = CombineError();
+                return CombineError(evalColumns, evalRows);
             }
         }
 
@@ -98,17 +145,17 @@ namespace SudokuKiller
             return 9-temp_array.Count;
         }
 
-        private int CombineError()
+        private int CombineError(int[] arrayColumns, int[] arrayRows)
         {
             int error = 0;
-            for (int i = 0; i < evalColumns.Length; i++)
+            for (int i = 0; i < arrayColumns.Length; i++)
             {
-                error += evalColumns[i];
+                error += arrayColumns[i];
             }
 
-            for (int j = 0; j < evalRows.Length; j++)
+            for (int j = 0; j < arrayRows.Length; j++)
             {
-                error += evalRows[j];
+                error += arrayRows[j];
             }
 
             return error;
@@ -132,7 +179,7 @@ namespace SudokuKiller
                 int[] row = this.sudoku.GetRow(i);
                 foreach (int j in row)
                 {
-                    sudokuString += $"{j} ";
+                    sudokuString += $" {j}";
                 }
                 sudokuString += "\n";
             }
