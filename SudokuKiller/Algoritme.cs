@@ -24,7 +24,7 @@ namespace SudokuKiller
         //Runt het algoritme en verandert het naar een string om uit te printen
         public string RunAlgoritme()
         {
-            FindEval(null, null);
+            FindEval(null, null, null);
 
             while (evalSudoku != 0)
             {
@@ -53,11 +53,12 @@ namespace SudokuKiller
             return SudokuToString();
         }
 
-        private void FindEval(Tuple<int> cell1, Tuple<int> cell2)
+        private void FindEval(Tuple<int> cell1, Tuple<int> cell2, MiniSudoku miniSudoku)
         {
-            if (cell1 != null && cell2 != null)
+            if (cell1 != null && cell2 != null && miniSudoku != null)
             {
                 //Update de fout
+
             }
             else
             {
