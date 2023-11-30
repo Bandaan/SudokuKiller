@@ -84,21 +84,18 @@ namespace SudokuKiller
 
         public static int FindError(int[] array)
         {
-            //Vind aantal dubbele in de array en return die
-            int duplicates = 0;
+            //Vind aantal missende getallen in de array en return die
+            List<int> temp_array = new List<int>();
 
             for (int i = 0; i < array.Length; i++)
             {
-                int[] temp_array = (int[])array.Clone();
-                temp_array[i] = 0;
-
-                if (temp_array.Contains(array[i]))
+                if (!temp_array.Contains(array[i]))
                 {
-                    duplicates++;
+                    temp_array.Add(array[i]);
                 }
             }
 
-            return duplicates;
+            return 9-temp_array.Count;
         }
 
         private int CombineError()
