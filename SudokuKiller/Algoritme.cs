@@ -33,13 +33,13 @@ namespace SudokuKiller
 
                 //Do all permutations and add them to evalCell
                 //Get the (first) smallest mistake from evalCell and the according swap
-                Tuple<int> smallestTuple = Swap(miniSudoku);
+                Swap smallestSwap = SwapSuggest(miniSudoku);
 
-                if (smallestTuple.Item1 <= this.evalSudoku)
+                if (smallestSwap.eval <= this.evalSudoku)
                 {
                     //Do the according swap
                     //Update evalSudoku to this smallest evalCell
-                    this.evalSudoku = smallestTuple.Item1;
+                    this.evalSudoku = smallestSwap.eval;
 
                     //If it is equal to evalSudoku we need to add to a counter so that we're not stuck on a plateau
                 }
@@ -114,18 +114,13 @@ namespace SudokuKiller
             return error;
         }
 
-        private Tuple<int> Swap(MiniSudoku miniSudoku)
+        private Swap SwapSuggest(MiniSudoku miniSudoku)
         {
-            List<Tuple<int>> evalCell = new List<Tuple<int>>();
+            //Doe alle swaps en als de fout kleniner is dan vorige dan voegen we deze fout toe als object
+            Swap smallestTuple;
 
-            //Doe alle swaps en voeg de fouten + swap toe aan evalCell
-
-
-            //Daarna de kleinste fout vinden en die tuple sturen
-            List<Tuple<int>> sortedList = evalCell.OrderBy(tuple => tuple.Item1).ToList();
-            Tuple<int> smallestTuple = sortedList.First();
-
-            return smallestTuple;
+            //return smallestSwap;
+            return new Swap(0, new Tuple<int, int>(0, 0), new Tuple<int, int>(0, 0));
         }
 
         private string SudokuToString()

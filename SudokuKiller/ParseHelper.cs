@@ -22,7 +22,7 @@ public static class ParseHelper
             {
                 miniSudoku[j] = int.Parse(input[(i / 3 * 3 + j / 3) * 9 + i % 3 * 3 + j % 3]);
             }
-
+            
             sudoku.AddMiniSudoku(FillNumbers(miniSudoku));
         }
         return sudoku;
