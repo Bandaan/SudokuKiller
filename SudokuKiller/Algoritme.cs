@@ -165,10 +165,42 @@ namespace SudokuKiller
         private Swap SwapSuggest(MiniSudoku miniSudoku)
         {
             //Doe alle swaps en als de fout kleniner is dan vorige dan voegen we deze fout toe als object
-            Swap smallestTuple;
+            Swap smallestElement = null;
 
-            //return smallestSwap;
-            return new Swap(0, new Tuple<int, int>(0, 0), new Tuple<int, int>(0, 0));
+            //Loop through all y's for 1st element
+            for (int i = 0; i < 3; i++)
+            {
+                //Loop through all x's for 1st element
+                for (int j = 0; j < 3; j++)
+                {
+                    //Loop through all y's for 2nd element
+                    for (int k = i; k < 3; k++)
+                    {
+                        //Loop through all x's for 2nd element
+                        for (int l = j; l < 3; l++)
+                        {
+                            //Check if it's not the same element
+                            if (miniSudoku.MiniSudokuList[j,i] == miniSudoku.MiniSudokuList[l,k])
+                            {
+                                continue;
+                            }
+                            //Check if it's not a fixed element
+                            else if (miniSudoku.MiniSudokuList[j,i].Fixed || miniSudoku.MiniSudokuList[l,k].Fixed)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                //Swap the two their position in the miniSudoku
+                                //Calculate the mistake
+                                //Check if it's smaller than the smallestElement
+                            }
+                        }
+                    }
+                }
+            }
+
+            return smallestElement;
         }
 
         private string SudokuToString()
