@@ -43,6 +43,7 @@ namespace SudokuKiller
                 //Make swap if it is an improvement else we go on and increment a counter
                 if (smallestSwap.eval <= this.evalSudoku)
                 {
+                    Console.WriteLine("kleinere swap");
                     //Do the according swap
                     Getal temp_getal = miniSudoku.MiniSudokuList[smallestSwap.pos_2.Item1,smallestSwap.pos_2.Item2];
                     miniSudoku.MiniSudokuList[smallestSwap.pos_2.Item1,smallestSwap.pos_2.Item1] = miniSudoku.MiniSudokuList[smallestSwap.pos_1.Item1,smallestSwap.pos_1.Item2];
@@ -186,7 +187,8 @@ namespace SudokuKiller
         private Swap SwapSuggest(MiniSudoku miniSudoku)
         {
             //Doe alle swaps en als de fout kleniner is dan vorige dan voegen we deze fout toe als object
-            Swap smallestElement = null;
+            Swap smallestElement = new Swap(int.MaxValue, null, null, null);
+
 
             //Loop through all y's for 1st element
             for (int i = 0; i < 3; i++)
@@ -220,7 +222,7 @@ namespace SudokuKiller
                                 //Calculate the mistake
                                 Tuple<int, Error> new_eval = FindEval(new Tuple<int, int>(j,i), new Tuple<int, int>(l,k), miniSudoku);
 
-                                if (smallestElement == null || new_eval.Item1 < smallestElement.eval)
+                                if (new_eval.Item1 < smallestElement.eval)
                                 {
                                     smallestElement = new Swap(new_eval.Item1, new_eval.Item2, new Tuple<int, int>(j,i), new Tuple<int, int>(l,k));
                                 }

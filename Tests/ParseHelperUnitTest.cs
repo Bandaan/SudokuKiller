@@ -38,8 +38,8 @@ namespace SudokuKiller.Tests
                 {
                     for (int j = 0; j < 3; j++)
                     {
-                        Assert.AreEqual(actual[i, j].Fixed, expected[i, j].Fixed);
-                        Assert.AreEqual(actual[i, j].Number, expected[i, j].Number);
+                        Assert.AreEqual(actual[i, j].vast, expected[i, j].vast);
+                        Assert.AreEqual(actual[i, j].number, expected[i, j].number);
                     }
                 }
                 
