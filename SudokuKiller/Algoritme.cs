@@ -225,11 +225,7 @@ namespace SudokuKiller
                                 //Calculate the mistake
                                 Tuple<int, Error> new_eval = FindEval(new Tuple<int, int>(j,i), new Tuple<int, int>(l,k), miniSudoku);
 
-                                if (smallestElement != null && new_eval.Item1 < smallestElement.eval)
-                                {
-                                    smallestElement = new Swap(new_eval.Item1, new_eval.Item2, new Tuple<int, int>(j,i), new Tuple<int, int>(l,k));
-                                }
-                                else
+                                if (smallestElement == null || new_eval.Item1 < smallestElement.eval)
                                 {
                                     smallestElement = new Swap(new_eval.Item1, new_eval.Item2, new Tuple<int, int>(j,i), new Tuple<int, int>(l,k));
                                 }
