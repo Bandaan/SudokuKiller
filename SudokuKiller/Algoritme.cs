@@ -173,6 +173,11 @@ namespace SudokuKiller
                 //Loop through all x's for 1st element
                 for (int j = 0; j < 3; j++)
                 {
+                    //Check if it's not a fixed element
+                    if (miniSudoku.MiniSudokuList[j,i].Fixed)
+                    {
+                        continue;
+                    }
                     //Loop through all y's for 2nd element
                     for (int k = i; k < 3; k++)
                     {
@@ -180,20 +185,33 @@ namespace SudokuKiller
                         for (int l = j; l < 3; l++)
                         {
                             //Check if it's not the same element
-                            if (miniSudoku.MiniSudokuList[j,i] == miniSudoku.MiniSudokuList[l,k])
+                            if (miniSudoku.MiniSudokuList[j,i] == miniSudoku.MiniSudokuList[l,k]) //Is dit goed of moeten we positie checken ipv zelfde object!!!!!?????
                             {
                                 continue;
                             }
                             //Check if it's not a fixed element
-                            else if (miniSudoku.MiniSudokuList[j,i].Fixed || miniSudoku.MiniSudokuList[l,k].Fixed)
+                            else if (miniSudoku.MiniSudokuList[l,k].Fixed)
                             {
                                 continue;
                             }
                             else
                             {
                                 //Swap the two their position in the miniSudoku
+                                Getal temp_getal = miniSudoku.MiniSudokuList[l,k];
+                                miniSudoku.MiniSudokuList[l,k] = miniSudoku.MiniSudokuList[j,i];
+                                miniSudoku.MiniSudokuList[j,i] = temp_getal;
+
                                 //Calculate the mistake
-                                //Check if it's smaller than the smallestElement
+                                if (smallestElement == null)
+                                {
+                                    int new_eval = FindEval(new Tuple<int, int>(j,i), new Tuple<int, int>(l,k), miniSudoku);
+                                    smallestElement = new Swap(new_eval, new Tuple<int, int>(j,i), new Tuple<int, int>(l,k));
+                                }
+                                int new_eval_2 = FindEval(new Tuple<int, int>(j,i), new Tuple<int, int>(l,k), miniSudoku);
+                                else if (new_eval_2 < smallestElement.eval)
+                                {
+                                    smallestElement = new Swap(new_eval_2, new Tuple<int, int>(j,i), new Tuple<int, int>(l,k));
+                                }
                             }
                         }
                     }
