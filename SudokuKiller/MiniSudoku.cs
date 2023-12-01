@@ -1,10 +1,10 @@
 ﻿namespace SudokuKiller
 {
-    // aanpassing poep
     public class MiniSudoku
     {
         public Getal[,] MiniSudokuList = new Getal[3, 3];
         private int x, y;
+        public int x_pos, y_pos;
 
         public MiniSudoku()
         {
@@ -39,7 +39,7 @@
             int columns = MiniSudokuList.GetLength(1);
             for (int col = 0; col < columns; col++)
             {
-                yield return MiniSudokuList[y, col].Number;
+                yield return MiniSudokuList[y, col].number;
             }
             
         }
@@ -49,7 +49,7 @@
             int rows = MiniSudokuList.GetLength(0);
             for (int row = 0; row < rows; row++)
             {
-                yield return MiniSudokuList[row, x].Number;
+                yield return MiniSudokuList[row, x].number;
             }
             
         }
