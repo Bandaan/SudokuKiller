@@ -11,14 +11,20 @@ namespace SudokuKiller
         int[] evalColumns;
         int[] evalRows;
         Random rnd;
+        int randomWalkLength;
+        int counter;
+        int randomWalkStart;
 
-        public Algoritme(Sudoku sudoku)
+        public Algoritme(Sudoku sudoku, int randomWalkLength)
         {
             this.sudoku = sudoku;
             this.evalSudoku = -1;
             this.evalColumns = new int[9];
             this.evalRows = new int[9];
             this.rnd = new Random();
+            this.randomWalkLength = randomWalkLength;
+            this.counter = 0;
+            this.randomWalkStart = 5; //Deze beetje testen
         }
 
         //Runt het algoritme en verandert het naar een string om uit te printen
@@ -52,10 +58,27 @@ namespace SudokuKiller
                     this.evalRows[smallestSwap.error.row_2] = smallestSwap.error.errorRow_2;
 
                     //If it is equal to evalSudoku we need to add to a counter so that we're not stuck on a plateau
+                    if (smallestSwap.eval == this.evalSudoku)
+                    {
+                        counter++;
+                    }
                 }
                 else
                 {
                     //In deze minisudoku is er geen swap die de toestand verbeterd dus random walk of een counter?
+                    counter++;
+                }
+
+                if (counter >= randomWalkStart)
+                {
+                    //Start de random walk
+                    for (int i = 0; i < randomWalkLength; i++)
+                    {
+                        miniSudoku = this.sudoku.SudokuList[rnd.Next(3), rnd.Next(3)];
+                        randomSwap(miniSudoku);
+                    }
+
+                    counter = 0;
                 }
             }
 
@@ -168,7 +191,7 @@ namespace SudokuKiller
                 for (int j = 0; j < 3; j++)
                 {
                     //Check if it's not a fixed element
-                    if (miniSudoku.MiniSudokuList[j,i].Fixed)
+                    if (miniSudoku.MiniSudokuList[j,i].vast)
                     {
                         continue;
                     }
@@ -184,7 +207,7 @@ namespace SudokuKiller
                                 continue;
                             }
                             //Check if it's not a fixed element
-                            else if (miniSudoku.MiniSudokuList[l,k].Fixed)
+                            else if (miniSudoku.MiniSudokuList[l,k].vast)
                             {
                                 continue;
                             }
@@ -218,6 +241,32 @@ namespace SudokuKiller
             }
 
             return smallestElement;
+        }
+
+        private void randomSwap(MiniSudoku miniSudoku)
+        {
+            int column_1 = 0, column_2 = 0, row_1 = 0, row_2 = 0;
+
+            while (column_1 == column_2 && row_1 == row_2 || miniSudoku.MiniSudokuList[column_1, row_1].vast || miniSudoku.MiniSudokuList[column_2, row_2].vast)
+            {
+                column_1 = rnd.Next(3);
+                column_2 = rnd.Next(3);
+                row_1 = rnd.Next(3);
+                row_2 = rnd.Next(3);
+            }
+
+            Getal temp_getal = miniSudoku.MiniSudokuList[column_2, row_2];
+            miniSudoku.MiniSudokuList[column_2, row_2] = miniSudoku.MiniSudokuList[column_1,row_1];
+            miniSudoku.MiniSudokuList[column_1,row_1] = temp_getal;
+
+            Tuple<int, Error> new_eval = FindEval(new Tuple<int, int>(column_1,row_1), new Tuple<int, int>(column_2,row_2), miniSudoku);
+            this.evalSudoku = new_eval.Item1;
+
+            //Also update the mistakes in evalColumns and evalRows
+            this.evalColumns[new_eval.Item2.column_1] = new_eval.Item2.errorColumn_1;
+            this.evalColumns[new_eval.Item2.column_2] = new_eval.Item2.errorColumn_2;
+            this.evalRows[new_eval.Item2.row_1] = new_eval.Item2.errorRow_1;
+            this.evalRows[new_eval.Item2.row_2] = new_eval.Item2.errorRow_2;
         }
 
         private string SudokuToString()

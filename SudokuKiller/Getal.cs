@@ -4,13 +4,13 @@ namespace SudokuKiller
 {
     public class Getal
     {
-        public int Number { get; set; }
-        public bool Fixed { get; set; }
+        public int number { get; set; }
+        public bool vast { get; set; }
         
         public Getal(int number, bool vast)
         {
-            Number = number;
-            Fixed = vast;
+            this.number = number;
+            this.vast = vast;
         }
     }
 }
