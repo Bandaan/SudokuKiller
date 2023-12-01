@@ -80,7 +80,7 @@ namespace SudokuKiller
                 return CombineError(evalColumns, evalRows);
         }
 
-        private int FindEval(Tuple<int, int> cell1, Tuple<int, int> cell2, MiniSudoku miniSudoku)
+        private Tuple<int, int, int, int, int> FindEval(Tuple<int, int> cell1, Tuple<int, int> cell2, MiniSudoku miniSudoku)
         {
             //Update de fout
 
@@ -89,47 +89,35 @@ namespace SudokuKiller
             int[] temp_array_rows = new int[evalRows.Length];
             Array.Copy(evalRows, temp_array_rows, evalRows.Length);
 
+            int column_1 = miniSudoku.x_pos*3 + cell1.Item1;
+            int column_2 = miniSudoku.x_pos*3 + cell2.Item1;
+            int row_1 = miniSudoku.y_pos*3 + cell1.Item2;
+            int row_2 = miniSudoku.y_pos*3 + cell2.Item2;
+
             //X is hetzelfde dus 1 column en 2 rows checken
             if (cell1.Item1 == cell2.Item1)
             {
-                int column = miniSudoku.x_pos*3 + cell1.Item1;
-                temp_array_columns[column] = FindError(this.sudoku.GetColumn(column));
-
-                int row_1 = miniSudoku.y_pos*3 + cell1.Item2;
+                temp_array_columns[column_1] = FindError(this.sudoku.GetColumn(column_1));
                 temp_array_rows[row_1] = FindError(this.sudoku.GetColumn(row_1));
-
-                int row_2 = miniSudoku.y_pos*3 + cell2.Item2;
                 temp_array_rows[row_2] = FindError(this.sudoku.GetColumn(row_2));
             }
             //Y is hetzelfde dus 2 columns en 1 row checken
             else if (cell1.Item2 == cell2.Item2)
             {
-                int column_1 = miniSudoku.x_pos*3 + cell1.Item1;
                 temp_array_columns[column_1] = FindError(this.sudoku.GetColumn(column_1));
-
-                int column_2 = miniSudoku.x_pos*3 + cell1.Item1;
                 temp_array_columns[column_2] = FindError(this.sudoku.GetColumn(column_2));
-
-                int row = miniSudoku.y_pos*3 + cell1.Item2;
-                temp_array_rows[row] = FindError(this.sudoku.GetColumn(row));
+                temp_array_rows[row_1] = FindError(this.sudoku.GetColumn(row_1));
             }
             //Beide niet hetzelfde dus 2 columns en 2 rows checken
             else
             {
-                int column_1 = miniSudoku.x_pos*3 + cell1.Item1;
                 temp_array_columns[column_1] = FindError(this.sudoku.GetColumn(column_1));
-
-                int column_2 = miniSudoku.x_pos*3 + cell1.Item1;
                 temp_array_columns[column_2] = FindError(this.sudoku.GetColumn(column_2));
-
-                int row_1 = miniSudoku.y_pos*3 + cell1.Item2;
                 temp_array_rows[row_1] = FindError(this.sudoku.GetColumn(row_1));
-
-                int row_2 = miniSudoku.y_pos*3 + cell2.Item2;
                 temp_array_rows[row_2] = FindError(this.sudoku.GetColumn(row_2));
             }
 
-            return CombineError(temp_array_columns, temp_array_rows);
+            return new Tuple<int, int, int, int, int>(CombineError(temp_array_columns, temp_array_rows),temp_array_columns[column_1],temp_array_columns[column_2],temp_array_rows[row_1],temp_array_rows[row_2]);
         }
 
         public static int FindError(int[] array)
@@ -204,15 +192,15 @@ namespace SudokuKiller
                                 miniSudoku.MiniSudokuList[j,i] = temp_getal;
 
                                 //Calculate the mistake
-                                int new_eval = FindEval(new Tuple<int, int>(j,i), new Tuple<int, int>(l,k), miniSudoku);
+                                Tuple<int, int, int, int, int> new_eval = FindEval(new Tuple<int, int>(j,i), new Tuple<int, int>(l,k), miniSudoku);
 
                                 if (smallestElement == null)
                                 {
-                                    smallestElement = new Swap(new_eval, new Tuple<int, int>(j,i), new Tuple<int, int>(l,k));
+                                    smallestElement = new Swap(new_eval.Item1, new_eval.Item2, new_eval.Item3, new_eval.Item4, new_eval.Item5, new Tuple<int, int>(j,i), new Tuple<int, int>(l,k));
                                 }
-                                else if (new_eval < smallestElement.eval)
+                                else if (new_eval.Item1 < smallestElement.eval)
                                 {
-                                    smallestElement = new Swap(new_eval, new Tuple<int, int>(j,i), new Tuple<int, int>(l,k));
+                                    smallestElement = new Swap(new_eval.Item1, new_eval.Item2, new_eval.Item3, new_eval.Item4, new_eval.Item5, new Tuple<int, int>(j,i), new Tuple<int, int>(l,k));
                                 }
 
                                 //Swap the two back to their old position in the miniSudoku
