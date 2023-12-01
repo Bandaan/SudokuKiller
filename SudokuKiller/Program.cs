@@ -8,7 +8,7 @@ namespace SudokuKiller
         {
             string[] input = Console.ReadLine().Split(" ");
             Sudoku sudoku = ParseHelper.ParseSudoku(input);
-            Algoritme algorithm = new Algoritme(sudoku, 1);
+            Algoritme algorithm = new Algoritme(sudoku, 5);
             algorithm.RunAlgoritme();
         }
     }

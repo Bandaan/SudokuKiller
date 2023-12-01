@@ -24,7 +24,7 @@ namespace SudokuKiller
             this.rnd = new Random();
             this.randomWalkLength = randomWalkLength;
             this.counter = 0;
-            this.randomWalkStart = 1; //Deze beetje testen
+            this.randomWalkStart = 10000; //Deze beetje testen
         }
 
         //Runt het algoritme en verandert het naar een string om uit te printen
@@ -41,16 +41,20 @@ namespace SudokuKiller
                 Swap smallestSwap = SwapSuggest(miniSudoku);
 
                 //Make swap if it is an improvement else we go on and increment a counter
-                if (smallestSwap.eval <= this.evalSudoku)
+                if (smallestSwap.eval <= evalSudoku)
                 {
-                    Console.WriteLine("kleinere swap");
+
+                    Console.WriteLine($"kleinere waarde ;{smallestSwap.eval}");
+                    Console.WriteLine($"swap ={smallestSwap.eval} evalsudoku = {evalSudoku}");
+                    
+                    this.evalSudoku = smallestSwap.eval;
+                    
                     //Do the according swap
                     Getal temp_getal = miniSudoku.MiniSudokuList[smallestSwap.pos_2.Item1,smallestSwap.pos_2.Item2];
                     miniSudoku.MiniSudokuList[smallestSwap.pos_2.Item1,smallestSwap.pos_2.Item1] = miniSudoku.MiniSudokuList[smallestSwap.pos_1.Item1,smallestSwap.pos_1.Item2];
                     miniSudoku.MiniSudokuList[smallestSwap.pos_1.Item1,smallestSwap.pos_1.Item2] = temp_getal;
 
                     //Update evalSudoku to this smallest evalCell
-                    this.evalSudoku = smallestSwap.eval;
 
                     //Also update the mistakes in evalColumns and evalRows
                     this.evalColumns[smallestSwap.error.column_1] = smallestSwap.error.errorColumn_1;
@@ -76,6 +80,7 @@ namespace SudokuKiller
 
                 if (counter >= randomWalkStart)
                 {
+                    Console.WriteLine("random swap ======================");
                     //Start de random walk
                     for (int i = 0; i < randomWalkLength; i++)
                     {
@@ -215,19 +220,19 @@ namespace SudokuKiller
                             else
                             {
                                 //Swap the two their position in the miniSudoku
-                                Getal temp_getal = miniSudoku.MiniSudokuList[l,k];
-                                miniSudoku.MiniSudokuList[l,k] = miniSudoku.MiniSudokuList[j,i];
-                                miniSudoku.MiniSudokuList[j,i] = temp_getal;
+                                Getal temp_getal = miniSudoku.MiniSudokuList[l, k];
+                                miniSudoku.MiniSudokuList[l, k] = miniSudoku.MiniSudokuList[j, i];
+                                miniSudoku.MiniSudokuList[j, i] = temp_getal;
 
-                                //Calculate the mistake
-                                Tuple<int, Error> new_eval = FindEval(new Tuple<int, int>(j,i), new Tuple<int, int>(l,k), miniSudoku);
+// Calculate the mistake
+                                Tuple<int, Error> new_eval = FindEval(new Tuple<int, int>(j, i), new Tuple<int, int>(l, k), miniSudoku);
 
                                 if (new_eval.Item1 < smallestElement.eval)
                                 {
-                                    smallestElement = new Swap(new_eval.Item1, new_eval.Item2, new Tuple<int, int>(j,i), new Tuple<int, int>(l,k));
+                                    smallestElement = new Swap(new_eval.Item1, new_eval.Item2, new Tuple<int, int>(l, k), new Tuple<int, int>(j, i));
                                 }
 
-                                //Swap the two back to their old position in the miniSudoku
+// Swap the two back to their old position in the miniSudoku
                                 Getal temp_getal_2 = miniSudoku.MiniSudokuList[l, k];
                                 miniSudoku.MiniSudokuList[l, k] = miniSudoku.MiniSudokuList[j, i];
                                 miniSudoku.MiniSudokuList[j, i] = temp_getal_2;
