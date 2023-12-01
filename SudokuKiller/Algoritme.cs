@@ -38,9 +38,13 @@ namespace SudokuKiller
                 if (smallestSwap.eval <= this.evalSudoku)
                 {
                     //Do the according swap
+                    Getal temp_getal = miniSudoku.MiniSudokuList[smallestSwap.pos_2.Item1,smallestSwap.pos_2.Item2];
+                    miniSudoku.MiniSudokuList[smallestSwap.pos_2.Item1,smallestSwap.pos_2.Item1] = miniSudoku.MiniSudokuList[smallestSwap.pos_1.Item1,smallestSwap.pos_1.Item2];
+                    miniSudoku.MiniSudokuList[smallestSwap.pos_1.Item1,smallestSwap.pos_1.Item2] = temp_getal;
 
                     //Update evalSudoku to this smallest evalCell
                     this.evalSudoku = smallestSwap.eval;
+
                     //Also update the mistakes in evalColumns and evalRows
 
                     //If it is equal to evalSudoku we need to add to a counter so that we're not stuck on a plateau
@@ -185,7 +189,7 @@ namespace SudokuKiller
                         for (int l = j; l < 3; l++)
                         {
                             //Check if it's not the same element
-                            if (miniSudoku.MiniSudokuList[j,i] == miniSudoku.MiniSudokuList[l,k]) //Is dit goed of moeten we positie checken ipv zelfde object!!!!!?????
+                            if (miniSudoku.MiniSudokuList[j,i] == miniSudoku.MiniSudokuList[l,k])
                             {
                                 continue;
                             }
@@ -202,16 +206,21 @@ namespace SudokuKiller
                                 miniSudoku.MiniSudokuList[j,i] = temp_getal;
 
                                 //Calculate the mistake
+                                int new_eval = FindEval(new Tuple<int, int>(j,i), new Tuple<int, int>(l,k), miniSudoku);
+
                                 if (smallestElement == null)
                                 {
-                                    int new_eval = FindEval(new Tuple<int, int>(j,i), new Tuple<int, int>(l,k), miniSudoku);
                                     smallestElement = new Swap(new_eval, new Tuple<int, int>(j,i), new Tuple<int, int>(l,k));
                                 }
-                                int new_eval_2 = FindEval(new Tuple<int, int>(j,i), new Tuple<int, int>(l,k), miniSudoku);
-                                else if (new_eval_2 < smallestElement.eval)
+                                else if (new_eval < smallestElement.eval)
                                 {
-                                    smallestElement = new Swap(new_eval_2, new Tuple<int, int>(j,i), new Tuple<int, int>(l,k));
+                                    smallestElement = new Swap(new_eval, new Tuple<int, int>(j,i), new Tuple<int, int>(l,k));
                                 }
+
+                                //Swap the two back to their old position in the miniSudoku
+                                Getal temp_getal_2 = miniSudoku.MiniSudokuList[l,k];
+                                miniSudoku.MiniSudokuList[l,k] = miniSudoku.MiniSudokuList[j,i];
+                                miniSudoku.MiniSudokuList[j,i] = temp_getal;
                             }
                         }
                     }
