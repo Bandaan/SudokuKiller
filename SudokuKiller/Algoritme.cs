@@ -24,7 +24,7 @@ namespace SudokuKiller
             this.rnd = new Random();
             this.randomWalkLength = randomWalkLength;
             this.counter = 0;
-            this.randomWalkStart = 5; //Deze beetje testen
+            this.randomWalkStart = 1; //Deze beetje testen
         }
 
         //Runt het algoritme en verandert het naar een string om uit te printen
@@ -61,6 +61,10 @@ namespace SudokuKiller
                     if (smallestSwap.eval == this.evalSudoku)
                     {
                         counter++;
+                    }
+                    else
+                    {
+                        counter = 0;
                     }
                 }
                 else
@@ -221,19 +225,19 @@ namespace SudokuKiller
                                 //Calculate the mistake
                                 Tuple<int, Error> new_eval = FindEval(new Tuple<int, int>(j,i), new Tuple<int, int>(l,k), miniSudoku);
 
-                                if (smallestElement == null)
+                                if (smallestElement != null && new_eval.Item1 < smallestElement.eval)
                                 {
                                     smallestElement = new Swap(new_eval.Item1, new_eval.Item2, new Tuple<int, int>(j,i), new Tuple<int, int>(l,k));
                                 }
-                                else if (new_eval.Item1 < smallestElement.eval)
+                                else
                                 {
                                     smallestElement = new Swap(new_eval.Item1, new_eval.Item2, new Tuple<int, int>(j,i), new Tuple<int, int>(l,k));
                                 }
 
                                 //Swap the two back to their old position in the miniSudoku
-                                Getal temp_getal_2 = miniSudoku.MiniSudokuList[l,k];
-                                miniSudoku.MiniSudokuList[l,k] = miniSudoku.MiniSudokuList[j,i];
-                                miniSudoku.MiniSudokuList[j,i] = temp_getal;
+                                Getal temp_getal_2 = miniSudoku.MiniSudokuList[l, k];
+                                miniSudoku.MiniSudokuList[l, k] = miniSudoku.MiniSudokuList[j, i];
+                                miniSudoku.MiniSudokuList[j, i] = temp_getal_2;
                             }
                         }
                     }
