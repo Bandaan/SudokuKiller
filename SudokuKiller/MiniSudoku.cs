@@ -39,7 +39,7 @@
             int columns = MiniSudokuList.GetLength(1);
             for (int col = 0; col < columns; col++)
             {
-                yield return MiniSudokuList[y, col].Number;
+                yield return MiniSudokuList[y, col].number;
             }
             
         }
@@ -49,7 +49,7 @@
             int rows = MiniSudokuList.GetLength(0);
             for (int row = 0; row < rows; row++)
             {
-                yield return MiniSudokuList[row, x].Number;
+                yield return MiniSudokuList[row, x].number;
             }
             
         }
