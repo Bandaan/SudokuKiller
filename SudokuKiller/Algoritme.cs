@@ -24,7 +24,7 @@ namespace SudokuKiller
         //Runt het algoritme en verandert het naar een string om uit te printen
         public string RunAlgoritme()
         {
-            evalSudoku = FindEval(null, null, null);
+            evalSudoku = InstantiateEval();
 
             while (evalSudoku != 0)
             {
@@ -59,62 +59,9 @@ namespace SudokuKiller
             return SudokuToString();
         }
 
-        private int FindEval(Tuple<int, int> cell1, Tuple<int, int> cell2, MiniSudoku miniSudoku)
+        private int InstantiateEval()
         {
-            if (cell1 != null && cell2 != null && miniSudoku != null)
-            {
-                //Update de fout
-
-                int[] temp_array_columns = new int[evalColumns.Length];
-                Array.Copy(evalColumns, temp_array_columns, evalColumns.Length);
-                int[] temp_array_rows = new int[evalRows.Length];
-                Array.Copy(evalRows, temp_array_rows, evalRows.Length);
-
-                //X is hetzelfde dus 1 column en 2 rows checken
-                if (cell1.Item1 == cell2.Item1)
-                {
-                    int column = miniSudoku.x_pos*3 + cell1.Item1;
-                    temp_array_columns[column] = FindError(this.sudoku.GetColumn(column));
-
-                    int row_1 = miniSudoku.y_pos*3 + cell1.Item2;
-                    temp_array_rows[row_1] = FindError(this.sudoku.GetColumn(row_1));
-
-                    int row_2 = miniSudoku.y_pos*3 + cell2.Item2;
-                    temp_array_rows[row_2] = FindError(this.sudoku.GetColumn(row_2));
-                }
-                //Y is hetzelfde dus 2 columns en 1 row checken
-                else if (cell1.Item2 == cell2.Item2)
-                {
-                    int column_1 = miniSudoku.x_pos*3 + cell1.Item1;
-                    temp_array_columns[column_1] = FindError(this.sudoku.GetColumn(column_1));
-
-                    int column_2 = miniSudoku.x_pos*3 + cell1.Item1;
-                    temp_array_columns[column_2] = FindError(this.sudoku.GetColumn(column_2));
-
-                    int row = miniSudoku.y_pos*3 + cell1.Item2;
-                    temp_array_rows[row] = FindError(this.sudoku.GetColumn(row));
-                }
-                //Beide niet hetzelfde dus 2 columns en 2 rows checken
-                else
-                {
-                    int column_1 = miniSudoku.x_pos*3 + cell1.Item1;
-                    temp_array_columns[column_1] = FindError(this.sudoku.GetColumn(column_1));
-
-                    int column_2 = miniSudoku.x_pos*3 + cell1.Item1;
-                    temp_array_columns[column_2] = FindError(this.sudoku.GetColumn(column_2));
-
-                    int row_1 = miniSudoku.y_pos*3 + cell1.Item2;
-                    temp_array_rows[row_1] = FindError(this.sudoku.GetColumn(row_1));
-
-                    int row_2 = miniSudoku.y_pos*3 + cell2.Item2;
-                    temp_array_rows[row_2] = FindError(this.sudoku.GetColumn(row_2));
-                }
-
-                return CombineError(temp_array_columns, temp_array_rows);
-            }
-            else
-            {
-                //Vind de fout van de hele sudoku
+            //Vind de fout van de hele sudoku
 
                 //Loop door alle kolommen
                 for (int i = 0; i < 9; i++)
@@ -131,7 +78,58 @@ namespace SudokuKiller
                 }
 
                 return CombineError(evalColumns, evalRows);
+        }
+
+        private int FindEval(Tuple<int, int> cell1, Tuple<int, int> cell2, MiniSudoku miniSudoku)
+        {
+            //Update de fout
+
+            int[] temp_array_columns = new int[evalColumns.Length];
+            Array.Copy(evalColumns, temp_array_columns, evalColumns.Length);
+            int[] temp_array_rows = new int[evalRows.Length];
+            Array.Copy(evalRows, temp_array_rows, evalRows.Length);
+
+            //X is hetzelfde dus 1 column en 2 rows checken
+            if (cell1.Item1 == cell2.Item1)
+            {
+                int column = miniSudoku.x_pos*3 + cell1.Item1;
+                temp_array_columns[column] = FindError(this.sudoku.GetColumn(column));
+
+                int row_1 = miniSudoku.y_pos*3 + cell1.Item2;
+                temp_array_rows[row_1] = FindError(this.sudoku.GetColumn(row_1));
+
+                int row_2 = miniSudoku.y_pos*3 + cell2.Item2;
+                temp_array_rows[row_2] = FindError(this.sudoku.GetColumn(row_2));
             }
+            //Y is hetzelfde dus 2 columns en 1 row checken
+            else if (cell1.Item2 == cell2.Item2)
+            {
+                int column_1 = miniSudoku.x_pos*3 + cell1.Item1;
+                temp_array_columns[column_1] = FindError(this.sudoku.GetColumn(column_1));
+
+                int column_2 = miniSudoku.x_pos*3 + cell1.Item1;
+                temp_array_columns[column_2] = FindError(this.sudoku.GetColumn(column_2));
+
+                int row = miniSudoku.y_pos*3 + cell1.Item2;
+                temp_array_rows[row] = FindError(this.sudoku.GetColumn(row));
+            }
+            //Beide niet hetzelfde dus 2 columns en 2 rows checken
+            else
+            {
+                int column_1 = miniSudoku.x_pos*3 + cell1.Item1;
+                temp_array_columns[column_1] = FindError(this.sudoku.GetColumn(column_1));
+
+                int column_2 = miniSudoku.x_pos*3 + cell1.Item1;
+                temp_array_columns[column_2] = FindError(this.sudoku.GetColumn(column_2));
+
+                int row_1 = miniSudoku.y_pos*3 + cell1.Item2;
+                temp_array_rows[row_1] = FindError(this.sudoku.GetColumn(row_1));
+
+                int row_2 = miniSudoku.y_pos*3 + cell2.Item2;
+                temp_array_rows[row_2] = FindError(this.sudoku.GetColumn(row_2));
+            }
+
+            return CombineError(temp_array_columns, temp_array_rows);
         }
 
         public static int FindError(int[] array)
