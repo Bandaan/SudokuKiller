@@ -205,13 +205,8 @@ namespace SudokuKiller
                         //Loop through all x's for 2nd element
                         for (int l = j; l < 3; l++)
                         {
-                            //Check if it's not the same element
-                            if (miniSudoku.MiniSudokuList[j,i] == miniSudoku.MiniSudokuList[l,k])
-                            {
-                                continue;
-                            }
-                            //Check if it's not a fixed element
-                            else if (miniSudoku.MiniSudokuList[l,k].vast)
+                            //Check if it's not the same element or fixed
+                            if (miniSudoku.MiniSudokuList[j,i] == miniSudoku.MiniSudokuList[l,k] || miniSudoku.MiniSudokuList[l,k].vast)
                             {
                                 continue;
                             }
