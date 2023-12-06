@@ -24,7 +24,7 @@ namespace SudokuKiller
             this.rnd = new Random();
             this.randomWalkLength = randomWalkLength;
             this.counter = 0;
-            this.randomWalkStart = 10000; //Deze beetje testen
+            this.randomWalkStart = 4; //Deze beetje testen
         }
 
         //Runt het algoritme en verandert het naar een string om uit te printen
@@ -46,6 +46,16 @@ namespace SudokuKiller
 
                     Console.WriteLine($"kleinere waarde ;{smallestSwap.eval}");
                     Console.WriteLine($"swap ={smallestSwap.eval} evalsudoku = {evalSudoku}");
+
+                    //If it is equal to evalSudoku we need to add to a counter so that we're not stuck on a plateau
+                    if (smallestSwap.eval == this.evalSudoku)
+                    {
+                        counter++;
+                    }
+                    else
+                    {
+                        counter = 0;
+                    }
                     
                     this.evalSudoku = smallestSwap.eval;
                     
@@ -61,16 +71,6 @@ namespace SudokuKiller
                     this.evalColumns[smallestSwap.error.column_2] = smallestSwap.error.errorColumn_2;
                     this.evalRows[smallestSwap.error.row_1] = smallestSwap.error.errorRow_1;
                     this.evalRows[smallestSwap.error.row_2] = smallestSwap.error.errorRow_2;
-
-                    //If it is equal to evalSudoku we need to add to a counter so that we're not stuck on a plateau
-                    if (smallestSwap.eval == this.evalSudoku)
-                    {
-                        counter++;
-                    }
-                    else
-                    {
-                        counter = 0;
-                    }
                 }
                 else
                 {
@@ -81,14 +81,16 @@ namespace SudokuKiller
                 if (counter >= randomWalkStart)
                 {
                     Console.WriteLine("random swap ======================");
+                    Thread.Sleep(1000);
+
+                    counter = 0;
+
                     //Start de random walk
                     for (int i = 0; i < randomWalkLength; i++)
                     {
                         miniSudoku = this.sudoku.SudokuList[rnd.Next(3), rnd.Next(3)];
                         randomSwap(miniSudoku);
                     }
-
-                    counter = 0;
                 }
             }
 
@@ -224,7 +226,7 @@ namespace SudokuKiller
                                 miniSudoku.MiniSudokuList[l, k] = miniSudoku.MiniSudokuList[j, i];
                                 miniSudoku.MiniSudokuList[j, i] = temp_getal;
 
-// Calculate the mistake
+                                // Calculate the mistake
                                 Tuple<int, Error> new_eval = FindEval(new Tuple<int, int>(j, i), new Tuple<int, int>(l, k), miniSudoku);
 
                                 if (new_eval.Item1 < smallestElement.eval)
@@ -232,7 +234,7 @@ namespace SudokuKiller
                                     smallestElement = new Swap(new_eval.Item1, new_eval.Item2, new Tuple<int, int>(l, k), new Tuple<int, int>(j, i));
                                 }
 
-// Swap the two back to their old position in the miniSudoku
+                                // Swap the two back to their old position in the miniSudoku
                                 Getal temp_getal_2 = miniSudoku.MiniSudokuList[l, k];
                                 miniSudoku.MiniSudokuList[l, k] = miniSudoku.MiniSudokuList[j, i];
                                 miniSudoku.MiniSudokuList[j, i] = temp_getal_2;
