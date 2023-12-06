@@ -250,7 +250,7 @@ namespace SudokuKiller
         {
             int column_1 = 0, column_2 = 0, row_1 = 0, row_2 = 0;
 
-            while (column_1 == column_2 && row_1 == row_2 || miniSudoku.MiniSudokuList[column_1, row_1].vast || miniSudoku.MiniSudokuList[column_2, row_2].vast)
+            while (column_1 == column_2 && row_1 == row_2 || miniSudoku.MiniSudokuList[row_1, column_1].vast || miniSudoku.MiniSudokuList[row_2, column_2].vast)
             {
                 column_1 = rnd.Next(3);
                 column_2 = rnd.Next(3);
@@ -258,11 +258,11 @@ namespace SudokuKiller
                 row_2 = rnd.Next(3);
             }
 
-            Getal temp_getal = miniSudoku.MiniSudokuList[column_2, row_2];
-            miniSudoku.MiniSudokuList[column_2, row_2] = miniSudoku.MiniSudokuList[column_1,row_1];
-            miniSudoku.MiniSudokuList[column_1,row_1] = temp_getal;
+            Getal temp_getal = miniSudoku.MiniSudokuList[row_2, column_2];
+            miniSudoku.MiniSudokuList[row_2, column_2] = miniSudoku.MiniSudokuList[row_1,column_1];
+            miniSudoku.MiniSudokuList[row_1, column_1] = temp_getal;
 
-            Tuple<int, Error> new_eval = FindEval(new Tuple<int, int>(column_1,row_1), new Tuple<int, int>(column_2,row_2), miniSudoku);
+            Tuple<int, Error> new_eval = FindEval(new Tuple<int, int>(row_1, column_1), new Tuple<int, int>(row_2, column_2), miniSudoku);
             this.evalSudoku = new_eval.Item1;
 
             //Also update the mistakes in evalColumns and evalRows
