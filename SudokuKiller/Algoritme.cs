@@ -24,7 +24,7 @@ namespace SudokuKiller
             this.rnd = new Random();
             this.randomWalkLength = randomWalkLength;
             this.counter = 0;
-            this.randomWalkStart = 4; //Deze beetje testen
+            this.randomWalkStart = 100; //Deze beetje testen
         }
 
         //Runt het algoritme en verandert het naar een string om uit te printen
@@ -44,7 +44,6 @@ namespace SudokuKiller
                 if (smallestSwap.eval <= evalSudoku)
                 {
 
-                    Console.WriteLine($"kleinere waarde ;{smallestSwap.eval}");
                     Console.WriteLine($"swap ={smallestSwap.eval} evalsudoku = {evalSudoku}");
 
                     //If it is equal to evalSudoku we need to add to a counter so that we're not stuck on a plateau
