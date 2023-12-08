@@ -4,15 +4,15 @@
     {
         public int eval { get; set; }
         public Error error { get; set; }
-        public Tuple<int, int> pos_1 { get; set; }
-        public Tuple<int, int> pos_2 { get; set; }
+        public Coordinaat pos1 { get; set; }
+        public Coordinaat pos2 { get; set; }
         
-        public Swap(int eval, Error error, Tuple<int, int> pos_1, Tuple<int, int> pos_2)
+        public Swap(int fout, Error mistake, Coordinaat pos_1, Coordinaat pos_2)
         {
-            this.eval = eval;
-            this.error = error;
-            this.pos_1 = pos_1;
-            this.pos_2 = pos_2;
+            eval = fout;
+            error = mistake;
+            pos1 = pos_1;
+            pos2 = pos_2;
         }
     }
 }
