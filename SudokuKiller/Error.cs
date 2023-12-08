@@ -2,25 +2,28 @@ namespace SudokuKiller
 {
     public class Error
     {
-        public int column_1 { get; set; }
-        public int column_2 { get; set; }
-        public int row_1 { get; set; }
-        public int row_2 { get; set; }
-        public int errorColumn_1 { get; set; }
-        public int errorColumn_2 { get; set; }
-        public int errorRow_1 { get; set; }
-        public int errorRow_2 { get; set; }
+        public int column1 { get; set; }
+        public int column2 { get; set; }
+        public int row1 { get; set; }
+        public int row2 { get; set; }
+        public int errorColumn1 { get; set; }
+        public int errorColumn2 { get; set; }
+        public int errorRow1 { get; set; }
+        public int errorRow2 { get; set; }
         
-        public Error(int column_1, int column_2, int row_1, int row_2, int errorColumn_1, int errorColumn_2, int errorRow_1, int errorRow_2)
+        public int eval;
+        
+        public Error(int fout, int column_1, int column_2, int row_1, int row_2, int errorColumn_1, int errorColumn_2, int errorRow_1, int errorRow_2)
         {
-            this.column_1 = column_1;
-            this.column_2 = column_2;
-            this.row_1 = row_1;
-            this.row_2 = row_2;
-            this.errorColumn_1 = errorColumn_1;
-            this.errorColumn_2 = errorColumn_2;
-            this.errorRow_1 = errorRow_1;
-            this.errorRow_2 = errorRow_2;
+            eval = fout;
+            column1 = column_1;
+            column2 = column_2;
+            row1 = row_1;
+            row2 = row_2;
+            errorColumn1 = errorColumn_1;
+            errorColumn2 = errorColumn_2;
+            errorRow1 = errorRow_1;
+            errorRow2 = errorRow_2;
         }
     }
 }
