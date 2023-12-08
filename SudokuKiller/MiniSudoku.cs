@@ -53,6 +53,13 @@
             }
             
         }
+
+        public void Swap(Tuple<int, int> pos1, Tuple<int, int> pos2)
+        {
+            Getal tempGetal = MiniSudokuList[pos2.Item1, pos2.Item2];
+            MiniSudokuList[pos2.Item1, pos2.Item2] = MiniSudokuList[pos1.Item1,pos1.Item2];
+            MiniSudokuList[pos1.Item1, pos1.Item2] = tempGetal;
+        }
         
     }
 }

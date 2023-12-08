@@ -2,7 +2,7 @@
 {
     public class Swap
     {
-        public int eval  { get; set; }
+        public int eval { get; set; }
         public Error error { get; set; }
         public Tuple<int, int> pos_1 { get; set; }
         public Tuple<int, int> pos_2 { get; set; }
