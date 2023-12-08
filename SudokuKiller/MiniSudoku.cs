@@ -1,10 +1,13 @@
-﻿namespace SudokuKiller
+﻿using System.Runtime.InteropServices;
+
+namespace SudokuKiller
 {
     public class MiniSudoku
     {
         public Getal[,] MiniSudokuList = new Getal[3, 3];
         private int x, y;
         Random rnd;
+        
         public int x_pos, y_pos;
 
         public MiniSudoku()
@@ -58,10 +61,12 @@
 
         public void Swap(Coordinaat left, Coordinaat right)
         {
+            Print();
             Getal tempGetal = MiniSudokuList[left.column, left.row];
             
             MiniSudokuList[left.column, left.row] = MiniSudokuList[right.column, right.row];
             MiniSudokuList[right.column, right.row] = tempGetal;
+            Print();
         }
 
         public Tuple<Coordinaat, Coordinaat> GetRandomSwap()
@@ -78,6 +83,20 @@
             }
             
             return new Tuple<Coordinaat, Coordinaat>(pos1, pos2);
+        }
+
+        public void Print()
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    Console.Write(MiniSudokuList[j, i].number + " ");
+                }
+                Console.WriteLine();
+            }
+            
+            Console.WriteLine("-----------------------");
         }
     }
 }

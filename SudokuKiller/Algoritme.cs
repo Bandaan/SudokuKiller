@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Runtime;
 
 namespace SudokuKiller
 {
@@ -19,7 +20,7 @@ namespace SudokuKiller
         {
             this.sudoku = sudoku;
             randomWalkLength = lengte;
-            randomWalkStart = 100;
+            randomWalkStart = 1000;
         }
         public string RunAlgoritme()
         {
@@ -30,7 +31,7 @@ namespace SudokuKiller
                 MiniSudoku miniSudoku = sudoku.GetRandomMiniSudoku();
                 Swap smallestSwap = SwapSuggest(miniSudoku);
                 
-                Console.WriteLine($"swap ={smallestSwap.eval} evalsudoku = {evalSudoku}");
+                // Console.WriteLine($"swap ={smallestSwap.eval} evalsudoku = {evalSudoku}");
                 if (smallestSwap.eval <= evalSudoku)
                 {
                     Console.WriteLine($"Kleiner swap ={smallestSwap.eval} evalsudoku = {evalSudoku}");
@@ -43,14 +44,15 @@ namespace SudokuKiller
                     {
                         counter = 0;
                     }
-                    evalSudoku = smallestSwap.eval;
-                    miniSudoku.Swap(smallestSwap.pos1, smallestSwap.pos2);
-
-                    evalColumns[smallestSwap.error.column_1] = smallestSwap.error.errorColumn_1;
-                    evalColumns[smallestSwap.error.column_2] = smallestSwap.error.errorColumn_2;
                     
-                    evalRows[smallestSwap.error.row_1] = smallestSwap.error.errorRow_1;
-                    evalRows[smallestSwap.error.row_2] = smallestSwap.error.errorRow_2;
+                    evalSudoku = smallestSwap.eval;
+                    // miniSudoku.Swap(smallestSwap.pos1, smallestSwap.pos2);
+                    //
+                    // evalColumns[smallestSwap.error.column_1] = smallestSwap.error.errorColumn_1;
+                    // evalColumns[smallestSwap.error.column_2] = smallestSwap.error.errorColumn_2;
+                    //
+                    // evalRows[smallestSwap.error.row_1] = smallestSwap.error.errorRow_1;
+                    // evalRows[smallestSwap.error.row_2] = smallestSwap.error.errorRow_2;
                 }
                 else
                 {
@@ -177,8 +179,11 @@ namespace SudokuKiller
                         {
                             if (miniSudoku.MiniSudokuList[j, i] != miniSudoku.MiniSudokuList[l, k] || !miniSudoku.MiniSudokuList[l,k].vast)
                             {
-                                miniSudoku.Swap(new Coordinaat(k, l), new Coordinaat(i, j));
+                                Console.WriteLine("start = " + InstantiateEval());
+                                miniSudoku.Swap(new Coordinaat(l, k), new Coordinaat(j, i));
                                 
+                                Console.WriteLine("geswitched = " + InstantiateEval());
+
                                 //Tuple<int, Error> new_eval = FindEval(new Tuple<int, int>(j, i), new Tuple<int, int>(l, k), miniSudoku);
                                 int error = InstantiateEval();
                                 
@@ -188,7 +193,11 @@ namespace SudokuKiller
                                 }
                                 
                                 // Swap the two back to their old position in the miniSudoku
-                                miniSudoku.Swap(new Coordinaat(i, j), new Coordinaat(k, l));
+                                miniSudoku.Swap(new Coordinaat(j, i), new Coordinaat(l, k));
+                                
+                                Console.WriteLine("terug = " + InstantiateEval());
+                                //miniSudoku.Print();
+                                Thread.Sleep(200000);
                             }
                         }
                     }
