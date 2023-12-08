@@ -61,12 +61,10 @@ namespace SudokuKiller
 
         public void Swap(Coordinaat left, Coordinaat right)
         {
-            Print();
             Getal tempGetal = MiniSudokuList[left.column, left.row];
             
             MiniSudokuList[left.column, left.row] = MiniSudokuList[right.column, right.row];
             MiniSudokuList[right.column, right.row] = tempGetal;
-            Print();
         }
 
         public Tuple<Coordinaat, Coordinaat> GetRandomSwap()
