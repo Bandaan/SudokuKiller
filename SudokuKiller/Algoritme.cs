@@ -156,7 +156,7 @@ namespace SudokuKiller
                 temp_array_rows[row_1] = FindError(this.sudoku.GetColumn(row_1));
                 temp_array_rows[row_2] = FindError(this.sudoku.GetColumn(row_2));
             }
-            Error error = new Error(CombineError(temp_array_columns, temp_array_rows, column_1,column_2,row_1,row_2,temp_array_columns[column_1],temp_array_columns[column_2],temp_array_rows[row_1],temp_array_rows[row_2]);
+            Error error = new Error(CombineError(temp_array_columns, temp_array_rows), column_1,column_2,row_1,row_2,temp_array_columns[column_1],temp_array_columns[column_2],temp_array_rows[row_1],temp_array_rows[row_2]);
             return error;
         }
 
@@ -166,7 +166,7 @@ namespace SudokuKiller
 
             for (int i = 0; i < array.Length; i++)
             {
-                if (!tempArray.Contains(array[i]))
+                if (!tempArray.Contains(array[i]))lol
                 {
                     tempArray.Add(array[i]);
                 }
