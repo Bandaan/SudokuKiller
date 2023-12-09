@@ -8,7 +8,7 @@ namespace SudokuKiller
         private int x, y;
         Random rnd;
         
-        public int x_pos, y_pos;
+        public int column, row;
 
         public MiniSudoku()
         {
@@ -16,9 +16,6 @@ namespace SudokuKiller
             y = 0;
             rnd = new Random();
         }
-
-        // nog een change
-
         public void AddGetal(Getal getal)
         {
             MiniSudokuList[y, x] = getal;
