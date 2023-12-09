@@ -16,8 +16,8 @@
         public void AddMiniSudoku(MiniSudoku miniSudoku)
         {
             SudokuList[y, x] = miniSudoku;
-            miniSudoku.x_pos = x;
-            miniSudoku.y_pos = y;
+            miniSudoku.x_pos = y;
+            miniSudoku.y_pos = x;
             IncrementIndices();
         }
 

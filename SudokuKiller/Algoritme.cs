@@ -20,12 +20,11 @@ namespace SudokuKiller
         {
             this.sudoku = sudoku;
             randomWalkLength = lengte;
-            randomWalkStart = 15;
+            randomWalkStart = 10;
         }
         public string RunAlgoritme()
         {
             evalSudoku = InstantiateEval();
-            
             Console.WriteLine($"begin fout: {evalSudoku}");
             while (evalSudoku != 0)
             {
@@ -35,7 +34,6 @@ namespace SudokuKiller
                 if (smallestSwap.eval <= evalSudoku)
                 {
                     Console.WriteLine($"Kleiner swap ={smallestSwap.eval} evalsudoku = {evalSudoku}");
-
                     if (smallestSwap.eval == evalSudoku)
                     {
                         counter++;
@@ -51,14 +49,11 @@ namespace SudokuKiller
                 }
                 else
                 {
-                    Console.WriteLine($"Groter swap ={smallestSwap.eval} evalsudoku = {evalSudoku}");
-
                     counter++;
                 }
 
                 if (counter >= randomWalkStart)
                 {
-                    Console.WriteLine("random swap");
                     counter = 0;
                     RandomWalk();
                 }
@@ -123,7 +118,7 @@ namespace SudokuKiller
         {
             int[] tempArrayColumns = new int[evalColumns.Length];
             int[] tempArrayRows = new int[evalRows.Length];
-
+            
             Array.Copy(evalColumns, tempArrayColumns, evalColumns.Length);
             Array.Copy(evalRows, tempArrayRows, evalRows.Length);
 
@@ -131,22 +126,41 @@ namespace SudokuKiller
             int column2 = miniSudoku.x_pos * 3 + punt2.column;
             int row1 = miniSudoku.y_pos * 3 + punt1.row;
             int row2 = miniSudoku.y_pos * 3 + punt2.row;
+            
+            // if (punt1.column == punt2.column)
+            // {
+            //     tempArrayColumns[column1] = FindError(sudoku.GetColumn(column1));
+            //     tempArrayRows[row1] = FindError(sudoku.GetRow(row1));
+            //     if (punt1.row != punt2.row)
+            //     {
+            //         tempArrayRows[row2] = FindError(sudoku.GetRow(row2));
+            //     }
+            // }
+            //
+            // if (punt1.row == punt2.row)
+            // {
+            //     tempArrayColumns[column1] = FindError(sudoku.GetColumn(column1));
+            //     tempArrayColumns[column2] = FindError(sudoku.GetColumn(column2));
+            //     tempArrayRows[row1] = FindError(sudoku.GetRow(row1));
+            // }
+            // else
+            // {
+            //     tempArrayColumns[column1] = FindError(sudoku.GetColumn(column1));
+            //     tempArrayColumns[column2] = FindError(sudoku.GetColumn(column2));
+            //     tempArrayRows[row1] = FindError(sudoku.GetRow(row1));
+            //     tempArrayRows[row2] = FindError(sudoku.GetRow(row2));
+            // }
+            
+            // Update columns
+            tempArrayColumns[column1] = FindError(sudoku.GetColumn(column1));
+            tempArrayColumns[column2] = FindError(sudoku.GetColumn(column2));
 
-            // Update only if the columns are different
-            if (punt1.column != punt2.column)
-            {
-                tempArrayColumns[column1] = FindError(sudoku.GetColumn(column1));
-                tempArrayColumns[column2] = FindError(sudoku.GetColumn(column2));
-            }
-
-            // Update only if the rows are different
-            if (punt1.row != punt2.row)
-            {
-                tempArrayRows[row1] = FindError(sudoku.GetRow(row1));
-                tempArrayRows[row2] = FindError(sudoku.GetRow(row2));
-            }
-
-            return new Error(CombineError(tempArrayColumns, tempArrayRows), column1, column2, row1, row2, tempArrayColumns[column1], tempArrayColumns[column2], tempArrayRows[row1], tempArrayRows[row2]);
+            // Update rows
+            tempArrayRows[row1] = FindError(sudoku.GetRow(row1));
+            tempArrayRows[row2] = FindError(sudoku.GetRow(row2));
+            
+            
+            return new Error(CombineError(tempArrayColumns, tempArrayRows), column1,column2,row1,row2,tempArrayColumns[column1],tempArrayColumns[column2],tempArrayRows[row1],tempArrayRows[row2]);
         }
 
 
@@ -185,13 +199,22 @@ namespace SudokuKiller
                                 
                                 miniSudoku.Swap(getal1, getal2);
                                 Error newEval = FindEval(getal1, getal2, miniSudoku);
+                                SetErrors(newEval);
+                                
+                                Console.WriteLine($"real error {InstantiateEval()} :: {newEval.eval}");
+                                //Thread.Sleep(1000);
+
+                                // if (InstantiateEval() != newEval.eval)
+                                // {
+                                //     Console.Write("stop");
+                                // }
 
                                 if (newEval.eval < smallestElement.eval)
                                 {
                                     smallestElement = new Swap(newEval.eval, newEval, getal1, getal2);
                                 }
-                                
                                 miniSudoku.Swap(getal2, getal1);
+                                SetErrors(newEval);
                             }
                         }
                     }
@@ -207,8 +230,11 @@ namespace SudokuKiller
             miniSudoku.Swap(swap.Item1, swap.Item2);
 
             Error newEval = FindEval(swap.Item1, swap.Item2, miniSudoku);
-            evalSudoku = newEval.eval;
             SetErrors(newEval);
+            //Console.WriteLine($"real error {InstantiateEval()} :: {newEval.eval}");
+            // Thread.Sleep(1000);
+            
+            evalSudoku = newEval.eval;
         }
 
         private string SudokuToString()
