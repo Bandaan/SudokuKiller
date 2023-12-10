@@ -1,16 +1,15 @@
-﻿using System.Reflection.Metadata.Ecma335;
-
+﻿
 namespace SudokuKiller
 {
     public class Getal
     {
         public int number { get; set; }
         public bool vast { get; set; }
-        
-        public Getal(int number, bool vast)
+
+        public Getal(int nummer, bool solid)
         {
-            this.number = number;
-            this.vast = vast;
+            number = nummer;
+            vast = solid;
         }
     }
 }

@@ -4,18 +4,20 @@
     {
         public MiniSudoku[,] SudokuList = new MiniSudoku[3, 3];
         private int x, y;
+        Random rnd;
 
         public Sudoku()
         {
             x = 0;
             y = 0;
+            rnd = new Random();
         }
 
         public void AddMiniSudoku(MiniSudoku miniSudoku)
         {
             SudokuList[y, x] = miniSudoku;
-            miniSudoku.x_pos = x;
-            miniSudoku.y_pos = y;
+            miniSudoku.column = y;
+            miniSudoku.row = x;
             IncrementIndices();
         }
 
@@ -66,6 +68,11 @@
 
             return columnArray;
 
+        }
+
+        public MiniSudoku GetRandomMiniSudoku()
+        {
+            return SudokuList[rnd.Next(3), rnd.Next(3)];
         }
     }
 }

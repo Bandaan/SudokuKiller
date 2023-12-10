@@ -1,64 +1,47 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Runtime;
 
 namespace SudokuKiller
 {
     public class Algoritme
     {
         Sudoku sudoku;
-        int evalSudoku;
-        int[] evalColumns;
-        int[] evalRows;
+        int evalSudoku = -1;
+        int[] evalColumns = new int[9];
+        int[] evalRows = new int[9];
         Random rnd;
         int randomWalkLength;
-        int counter;
+        int counter = 0;
         int randomWalkStart;
+        bool improvement;
 
-        public Algoritme(Sudoku sudoku, int randomWalkLength)
+        public Algoritme(Sudoku sudoku, int randomwalkstart, int randomwalklength, string type)
         {
             this.sudoku = sudoku;
-            this.evalSudoku = -1;
-            this.evalColumns = new int[9];
-            this.evalRows = new int[9];
-            this.rnd = new Random();
-            this.randomWalkLength = randomWalkLength;
-            this.counter = 0;
-            this.randomWalkStart = 1; //Deze beetje testen
+            randomWalkStart = randomwalkstart;
+            randomWalkLength = randomwalklength;
+            improvement = (type == "best") ? true : false;
         }
-
-        //Runt het algoritme en verandert het naar een string om uit te printen
         public string RunAlgoritme()
         {
             evalSudoku = InstantiateEval();
-
+            Console.WriteLine($"begin fout: {evalSudoku}");
             while (evalSudoku != 0)
             {
-                //Select random miniSudoku
-                MiniSudoku miniSudoku = this.sudoku.SudokuList[rnd.Next(3), rnd.Next(3)];
-
-                //Do all permutations and suggest a swap
-                Swap smallestSwap = SwapSuggest(miniSudoku);
-
-                //Make swap if it is an improvement else we go on and increment a counter
-                if (smallestSwap.eval <= this.evalSudoku)
+                if (counter == 1000)
                 {
-                    //Do the according swap
-                    Getal temp_getal = miniSudoku.MiniSudokuList[smallestSwap.pos_2.Item1,smallestSwap.pos_2.Item2];
-                    miniSudoku.MiniSudokuList[smallestSwap.pos_2.Item1,smallestSwap.pos_2.Item1] = miniSudoku.MiniSudokuList[smallestSwap.pos_1.Item1,smallestSwap.pos_1.Item2];
-                    miniSudoku.MiniSudokuList[smallestSwap.pos_1.Item1,smallestSwap.pos_1.Item2] = temp_getal;
-
-                    //Update evalSudoku to this smallest evalCell
-                    this.evalSudoku = smallestSwap.eval;
-
-                    //Also update the mistakes in evalColumns and evalRows
-                    this.evalColumns[smallestSwap.error.column_1] = smallestSwap.error.errorColumn_1;
-                    this.evalColumns[smallestSwap.error.column_2] = smallestSwap.error.errorColumn_2;
-                    this.evalRows[smallestSwap.error.row_1] = smallestSwap.error.errorRow_1;
-                    this.evalRows[smallestSwap.error.row_2] = smallestSwap.error.errorRow_2;
-
-                    //If it is equal to evalSudoku we need to add to a counter so that we're not stuck on a plateau
-                    if (smallestSwap.eval == this.evalSudoku)
+                    Console.WriteLine($"echte error {InstantiateEval()} :: onze error {evalSudoku}");
+                    Thread.Sleep(10000);
+                }
+                MiniSudoku miniSudoku = sudoku.GetRandomMiniSudoku();
+                Swap smallestSwap = SwapSuggest(miniSudoku);
+                
+                if (smallestSwap.eval <= evalSudoku)
+                {
+                    Console.WriteLine($"Kleiner swap ={smallestSwap.eval} evalsudoku = {evalSudoku}");
+                    if (smallestSwap.eval == evalSudoku)
                     {
                         counter++;
                     }
@@ -66,169 +49,153 @@ namespace SudokuKiller
                     {
                         counter = 0;
                     }
+                    
+                    miniSudoku.Swap(smallestSwap.pos1, smallestSwap.pos2);
+                    SetErrors(evalColumns, evalRows, smallestSwap.pos1.error, smallestSwap.pos2.error);
+                    evalSudoku = smallestSwap.eval;
                 }
                 else
                 {
-                    //In deze minisudoku is er geen swap die de toestand verbeterd dus random walk of een counter?
                     counter++;
                 }
 
                 if (counter >= randomWalkStart)
                 {
-                    //Start de random walk
-                    for (int i = 0; i < randomWalkLength; i++)
-                    {
-                        miniSudoku = this.sudoku.SudokuList[rnd.Next(3), rnd.Next(3)];
-                        randomSwap(miniSudoku);
-                    }
-
                     counter = 0;
+                    RandomWalk();
                 }
             }
-
-            //Nu is de fout 0 en willen we de sudoku omzetten in een string
+            
             return SudokuToString();
+        }
+
+        private void SetErrors(int[] columnError, int[] rowError, Error punt1, Error punt2)
+        {
+            columnError[punt1.columIndex] = punt1.columnError;
+            columnError[punt2.columIndex] = punt2.columnError;
+
+            rowError[punt1.rowIndex] = punt1.rowError;
+            rowError[punt2.rowIndex] = punt2.rowError;
+        }
+
+        private void RandomWalk()
+        {
+            Console.WriteLine("walk");
+            for (int i = 0; i < randomWalkLength; i++)
+            {
+                Console.WriteLine("doet nu random swap");
+                MiniSudoku miniSudoku = sudoku.GetRandomMiniSudoku();
+                Swap swap = RandomSwap(miniSudoku);
+                
+                miniSudoku.Swap(swap.pos1, swap.pos2);
+                SetErrors(evalColumns, evalRows, swap.pos1.error, swap.pos2.error);
+                evalSudoku = swap.eval;
+                
+            }
         }
 
         private int InstantiateEval()
         {
-            //Vind de fout van de hele sudoku
-
-                //Loop door alle kolommen
-                for (int i = 0; i < 9; i++)
-                {
-                    int fout = FindError(this.sudoku.GetColumn(i));
-                    evalColumns[i] = fout;
-                }
-
-                //Loop door alle rows
-                for (int i = 0; i < 9; i++)
-                {
-                    int fout = FindError(this.sudoku.GetRow(i));
-                    evalRows[i] = fout;
-                }
-
-                return CombineError(evalColumns, evalRows);
+            for (int i = 0; i < 9; i++)
+            {
+                evalColumns[i] = FindError(sudoku.GetColumn(i));
+                evalRows[i] = FindError(sudoku.GetRow(i));
+            }
+            return CombineError(evalColumns, evalRows);
         }
-
-        private Tuple<int, Error> FindEval(Tuple<int, int> cell1, Tuple<int, int> cell2, MiniSudoku miniSudoku)
-        {
-            //Update de fout
-
-            int[] temp_array_columns = new int[evalColumns.Length];
-            Array.Copy(evalColumns, temp_array_columns, evalColumns.Length);
-            int[] temp_array_rows = new int[evalRows.Length];
-            Array.Copy(evalRows, temp_array_rows, evalRows.Length);
-
-            int column_1 = miniSudoku.x_pos*3 + cell1.Item1;
-            int column_2 = miniSudoku.x_pos*3 + cell2.Item1;
-            int row_1 = miniSudoku.y_pos*3 + cell1.Item2;
-            int row_2 = miniSudoku.y_pos*3 + cell2.Item2;
-
-            //X is hetzelfde dus 1 column en 2 rows checken
-            if (cell1.Item1 == cell2.Item1)
-            {
-                temp_array_columns[column_1] = FindError(this.sudoku.GetColumn(column_1));
-                temp_array_rows[row_1] = FindError(this.sudoku.GetColumn(row_1));
-                temp_array_rows[row_2] = FindError(this.sudoku.GetColumn(row_2));
-            }
-            //Y is hetzelfde dus 2 columns en 1 row checken
-            else if (cell1.Item2 == cell2.Item2)
-            {
-                temp_array_columns[column_1] = FindError(this.sudoku.GetColumn(column_1));
-                temp_array_columns[column_2] = FindError(this.sudoku.GetColumn(column_2));
-                temp_array_rows[row_1] = FindError(this.sudoku.GetColumn(row_1));
-            }
-            //Beide niet hetzelfde dus 2 columns en 2 rows checken
-            else
-            {
-                temp_array_columns[column_1] = FindError(this.sudoku.GetColumn(column_1));
-                temp_array_columns[column_2] = FindError(this.sudoku.GetColumn(column_2));
-                temp_array_rows[row_1] = FindError(this.sudoku.GetColumn(row_1));
-                temp_array_rows[row_2] = FindError(this.sudoku.GetColumn(row_2));
-            }
-            Error error = new Error(column_1,column_2,row_1,row_2,temp_array_columns[column_1],temp_array_columns[column_2],temp_array_rows[row_1],temp_array_rows[row_2]);
-            return new Tuple<int, Error>(CombineError(temp_array_columns, temp_array_rows),error);
-        }
-
-        public static int FindError(int[] array)
-        {
-            //Vind aantal missende getallen in de array en return die
-            List<int> temp_array = new List<int>();
-
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (!temp_array.Contains(array[i]))
-                {
-                    temp_array.Add(array[i]);
-                }
-            }
-
-            return 9-temp_array.Count;
-        }
-
+        
         private int CombineError(int[] arrayColumns, int[] arrayRows)
         {
             int error = 0;
             for (int i = 0; i < arrayColumns.Length; i++)
             {
                 error += arrayColumns[i];
-            }
-
-            for (int j = 0; j < arrayRows.Length; j++)
-            {
-                error += arrayRows[j];
+                error += arrayRows[i];
             }
 
             return error;
         }
 
+        private int FindEval(Coordinaat punt1, Coordinaat punt2, MiniSudoku miniSudoku)
+        {
+            int column1 = miniSudoku.column * 3 + punt1.column;
+            int row1 = miniSudoku.row * 3 + punt1.row;
+            
+            punt1.error = new Error(column1, FindError(sudoku.GetColumn(column1)), row1, FindError(sudoku.GetRow(row1)));
+            
+            int column2 = miniSudoku.column * 3 + punt2.column;
+            int row2 = miniSudoku.row * 3 + punt2.row;
+            
+            punt2.error = new Error(column2, FindError(sudoku.GetColumn(column2)), row2, FindError(sudoku.GetRow(row2)));
+            
+            int[] tempColumn = (int[])evalColumns.Clone();
+            int[] tempRow = (int[])evalRows.Clone();
+
+            SetErrors(evalColumns, evalRows, punt1.error, punt2.error);
+            
+            // for (int i = 0; i < 9; i++)
+            // {
+            //     Console.WriteLine(tempColumn[i] + " " + tempRow[i]);
+            // }
+            // Console.WriteLine("====================");
+            
+            int result = CombineError(evalColumns, evalRows);
+            
+            evalColumns = (int[])tempColumn.Clone();
+            evalRows = (int[])tempRow.Clone();
+            return result;
+
+        }
+
+        public static int FindError(int[] array)
+        {
+            List<int> tempArray = new List<int>();
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (!tempArray.Contains(array[i]))
+                {
+                    tempArray.Add(array[i]);
+                }
+            }
+
+            return 9-tempArray.Count;
+        }
+        
         private Swap SwapSuggest(MiniSudoku miniSudoku)
         {
-            //Doe alle swaps en als de fout kleniner is dan vorige dan voegen we deze fout toe als object
-            Swap smallestElement = null;
-
-            //Loop through all y's for 1st element
+            
+            Swap smallestElement = new Swap(int.MaxValue, null, null);
+            
             for (int i = 0; i < 3; i++)
             {
-                //Loop through all x's for 1st element
                 for (int j = 0; j < 3; j++)
                 {
-                    //Check if it's not a fixed element
-                    if (miniSudoku.MiniSudokuList[j,i].vast)
+                    for (int k = 0; k < 3; k++)
                     {
-                        continue;
-                    }
-                    //Loop through all y's for 2nd element
-                    for (int k = i; k < 3; k++)
-                    {
-                        //Loop through all x's for 2nd element
-                        for (int l = j; l < 3; l++)
+                        for (int l = 0; l < 3; l++)
                         {
-                            //Check if it's not the same element or fixed
-                            if (miniSudoku.MiniSudokuList[j,i] == miniSudoku.MiniSudokuList[l,k] || miniSudoku.MiniSudokuList[l,k].vast)
+                            if (miniSudoku.MiniSudokuList[j, i].number != miniSudoku.MiniSudokuList[l, k].number && !miniSudoku.MiniSudokuList[l, k].vast && !miniSudoku.MiniSudokuList[j, i].vast)
                             {
-                                continue;
-                            }
-                            else
-                            {
-                                //Swap the two their position in the miniSudoku
-                                Getal temp_getal = miniSudoku.MiniSudokuList[l,k];
-                                miniSudoku.MiniSudokuList[l,k] = miniSudoku.MiniSudokuList[j,i];
-                                miniSudoku.MiniSudokuList[j,i] = temp_getal;
+                                Coordinaat getal1 = new Coordinaat(l, k);
+                                Coordinaat getal2 = new Coordinaat(j, i);
 
-                                //Calculate the mistake
-                                Tuple<int, Error> new_eval = FindEval(new Tuple<int, int>(j,i), new Tuple<int, int>(l,k), miniSudoku);
+                                miniSudoku.Swap(getal1, getal2);
+                                int newEval = FindEval(getal1, getal2, miniSudoku);
 
-                                if (smallestElement == null || new_eval.Item1 < smallestElement.eval)
+                                // for (int m = 0; m < 9; m++)
+                                // {
+                                //     Console.WriteLine(evalColumns[m] + " " + evalRows[m]);
+                                // }
+                                //
+                                // Console.WriteLine("====================");
+                                //Thread.Sleep((3000));
+                                
+                                if (newEval < smallestElement.eval)
                                 {
-                                    smallestElement = new Swap(new_eval.Item1, new_eval.Item2, new Tuple<int, int>(j,i), new Tuple<int, int>(l,k));
+                                    smallestElement = new Swap(newEval, getal1, getal2);
                                 }
-
-                                //Swap the two back to their old position in the miniSudoku
-                                Getal temp_getal_2 = miniSudoku.MiniSudokuList[l, k];
-                                miniSudoku.MiniSudokuList[l, k] = miniSudoku.MiniSudokuList[j, i];
-                                miniSudoku.MiniSudokuList[j, i] = temp_getal_2;
+                                miniSudoku.Swap(getal2, getal1);
                             }
                         }
                     }
@@ -238,30 +205,13 @@ namespace SudokuKiller
             return smallestElement;
         }
 
-        private void randomSwap(MiniSudoku miniSudoku)
+        private Swap RandomSwap(MiniSudoku miniSudoku)
         {
-            int column_1 = 0, column_2 = 0, row_1 = 0, row_2 = 0;
+            Tuple<Coordinaat, Coordinaat> swap = miniSudoku.GetRandomSwap();
+            int eval = FindEval(swap.Item1, swap.Item2, miniSudoku);
 
-            while (column_1 == column_2 && row_1 == row_2 || miniSudoku.MiniSudokuList[column_1, row_1].vast || miniSudoku.MiniSudokuList[column_2, row_2].vast)
-            {
-                column_1 = rnd.Next(3);
-                column_2 = rnd.Next(3);
-                row_1 = rnd.Next(3);
-                row_2 = rnd.Next(3);
-            }
+            return new Swap(eval, swap.Item1, swap.Item2);
 
-            Getal temp_getal = miniSudoku.MiniSudokuList[column_2, row_2];
-            miniSudoku.MiniSudokuList[column_2, row_2] = miniSudoku.MiniSudokuList[column_1,row_1];
-            miniSudoku.MiniSudokuList[column_1,row_1] = temp_getal;
-
-            Tuple<int, Error> new_eval = FindEval(new Tuple<int, int>(column_1,row_1), new Tuple<int, int>(column_2,row_2), miniSudoku);
-            this.evalSudoku = new_eval.Item1;
-
-            //Also update the mistakes in evalColumns and evalRows
-            this.evalColumns[new_eval.Item2.column_1] = new_eval.Item2.errorColumn_1;
-            this.evalColumns[new_eval.Item2.column_2] = new_eval.Item2.errorColumn_2;
-            this.evalRows[new_eval.Item2.row_1] = new_eval.Item2.errorRow_1;
-            this.evalRows[new_eval.Item2.row_2] = new_eval.Item2.errorRow_2;
         }
 
         private string SudokuToString()
@@ -270,7 +220,7 @@ namespace SudokuKiller
 
             for (int i = 0; i < 9; i++)
             {
-                int[] row = this.sudoku.GetRow(i);
+                int[] row = sudoku.GetRow(i);
                 foreach (int j in row)
                 {
                     sudokuString += $" {j}";
