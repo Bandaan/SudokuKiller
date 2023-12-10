@@ -9,10 +9,10 @@ namespace SudokuKiller
         {
             string[] input = Console.ReadLine().Split(" ");
             Sudoku sudoku = ParseHelper.ParseSudoku(input);
-            Algoritme algorithm = new Algoritme(sudoku, 5, 10, "best");
+            Algoritme algorithm = new Algoritme(sudoku, 10000, 2, "best");
             Console.WriteLine(algorithm.RunAlgoritme());
 
-            GetTestResults();
+            //GetTestResults();
         }
 
         static void GetTestResults()
