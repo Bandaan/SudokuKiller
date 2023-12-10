@@ -7,12 +7,12 @@ namespace SudokuKiller
     {
         static void Main()
         {
-            string[] input = Console.ReadLine().Split(" ");
-            Sudoku sudoku = ParseHelper.ParseSudoku(input);
-            Algoritme algorithm = new Algoritme(sudoku, 5, 2, "best");
-            Console.WriteLine(algorithm.RunAlgoritme());
+            // string[] input = Console.ReadLine().Split(" ");
+            // Sudoku sudoku = ParseHelper.ParseSudoku(input);
+            // Algoritme algorithm = new Algoritme(sudoku, 5, 2, "best");
+            // Console.WriteLine(algorithm.RunAlgoritme());
 
-            //GetTestResults();
+            GetTestResults();
         }
 
         static void GetTestResults()
@@ -27,7 +27,7 @@ namespace SudokuKiller
             }
         }
 
-        static void GenerateTestResults(string testName, string[] test, string path)
+        static async Task GenerateTestResults(string testName, string[] test, string path)
         {
             string newPath = Path.Combine(path, $@"..\{testName}.csv");
             
@@ -35,28 +35,40 @@ namespace SudokuKiller
             Sudoku sudoku = ParseHelper.ParseSudoku(test);
             
             string[] improvement = new[] { "best", "first" };
+            int MaxWalkLength = 20;
+            int MaxWalkStart = 20;
 
-            for (int i = 0; i < 20; i++)
+            Task<string>[] tasksArray = new Task<string>[MaxWalkLength * MaxWalkStart * 2 + 1];
+
+            int index = 0;
+            for (int i = 5; i < MaxWalkStart; i++)
             {
-                for (int j = 0; j < 20; j++)
+                for (int j = 2; j < MaxWalkLength; j++)
                 {
                     foreach (var type in improvement)
                     {
-                        Stopwatch stopwatch = new Stopwatch();
-                        Algoritme algorithm = new Algoritme(sudoku, i, j, type);
-                        
-                        stopwatch.Start();
-                        algorithm.RunAlgoritme();
-                        stopwatch.Stop();
-
-                        string text = $"\n{stopwatch.ElapsedMilliseconds},{j},{i},{type}";
-                        
-                        File.AppendAllText(newPath, text);
-
+                        tasksArray[index] = Task.Run(() => RunTask(sudoku, i, j, type));
+                        index++;
                     }
                 }
             }
+            
+            //string[] results = Task.WaitAll(tasksArray);
         }
+
+        private static string RunTask(Sudoku sudoku, int i, int j, string type)
+        {
+            Stopwatch sw = new Stopwatch();
+            Algoritme algorithm = new Algoritme(sudoku, i, j, type);
+            
+            sw.Start();
+            algorithm.RunAlgoritme();
+            sw.Stop();
+
+            return $"{sw.ElapsedMilliseconds},{i},{j},{type}";
+
+        }
+        
 
         private static void InstatiateFile(string newPath)
         {
