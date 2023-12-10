@@ -27,19 +27,16 @@ namespace SudokuKiller
         public string RunAlgoritme()
         {
             evalSudoku = InstantiateEval();
-            Console.WriteLine($"begin fout: {evalSudoku}");
-            
-            
+
             while (evalSudoku != 0)
             {
                 MiniSudoku miniSudoku = sudoku.GetRandomMiniSudoku();
                 Swap smallestSwap = SwapSuggest(miniSudoku);
                 
-                Console.WriteLine($"Kleiner swap ={smallestSwap.eval} evalsudoku = {evalSudoku}");
+                //Console.WriteLine($"Kleiner swap ={smallestSwap.eval} evalsudoku = {evalSudoku}");
                 
                 if (smallestSwap.eval <= evalSudoku)
                 {
-                    Console.WriteLine($"Kleiner swap ={smallestSwap.eval} evalsudoku = {evalSudoku}");
                     if (smallestSwap.eval == evalSudoku)
                     {
                         counter++;
@@ -50,6 +47,8 @@ namespace SudokuKiller
                     }
                     
                     miniSudoku.Swap(smallestSwap.pos1, smallestSwap.pos2);
+                    
+                    
                     SetErrors(evalColumns, evalRows, smallestSwap.pos1.error, smallestSwap.pos2.error);
                     evalSudoku = smallestSwap.eval;
                 }
@@ -65,6 +64,7 @@ namespace SudokuKiller
                 }
             }
             
+            Console.WriteLine("klaar");
             return SudokuToString();
         }
 
@@ -79,10 +79,8 @@ namespace SudokuKiller
 
         private void RandomWalk()
         {
-            Console.WriteLine("walk");
             for (int i = 0; i < randomWalkLength; i++)
             {
-                Console.WriteLine("doet nu random swap");
                 MiniSudoku miniSudoku = sudoku.GetRandomMiniSudoku();
                 Swap swap = RandomSwap(miniSudoku);
                 
@@ -119,6 +117,7 @@ namespace SudokuKiller
         private int FindEval(Coordinaat punt1, Coordinaat punt2, MiniSudoku miniSudoku)
         {
             int column1 = miniSudoku.column * 3 + punt1.column;
+            
             int row1 = miniSudoku.row * 3 + punt1.row;
             
             punt1.error = new Error(row1, FindError(sudoku.GetColumn(row1)), column1, FindError(sudoku.GetRow(column1)));
@@ -131,46 +130,10 @@ namespace SudokuKiller
             int[] tempColumn = (int[])evalColumns.Clone();
             int[] tempRow = (int[])evalRows.Clone();
             
-            
             SetErrors(tempColumn, tempRow, punt1.error, punt2.error);
             
-            // Console.WriteLine("voor alles");
-            // Console.WriteLine("column1 " + string.Join(", ", FindError(sudoku.GetColumn(column1))));
-            // Console.WriteLine("column2 " + string.Join(", ", FindError(sudoku.GetColumn(column2))));
-            // Console.WriteLine("row1 " + string.Join(", ", FindError(sudoku.GetColumn(row1))));
-            // Console.WriteLine("row2 " + string.Join(", ", FindError(sudoku.GetColumn(row2))));
-            //
-            // Console.WriteLine("van de functie zelf");
-            //
-            // Console.WriteLine("echte error");
-            // Console.WriteLine("column " + string.Join(", ", evalColumns));
-            // Console.WriteLine("row " + string.Join(", ", evalRows));
+            int result = CombineError(tempColumn, tempRow);
             
-            //InstantiateEval(column1, column2, row1, row2);
-            
-            
-            // Console.WriteLine("temp columns");
-            // Console.WriteLine($"indexen aangepast {column1} , {column2}");
-            // Console.WriteLine("column " + string.Join(", ", tempColumn));
-            //
-            // Console.WriteLine($"indexen aangepast {row1} , {row2}");
-            // Console.WriteLine("row " + string.Join(", ", tempRow));
-            //
-            // Console.WriteLine("echte error");
-            // Console.WriteLine("column " + string.Join(", ", evalColumns));
-            // Console.WriteLine("row " + string.Join(", ", evalRows));
-            
-            //Thread.Sleep(2000000);
-            //SetErrors(evalColumns, evalRows, punt1.error, punt2.error);
-            
-            // Console.WriteLine(CombineError(evalColumns, evalRows));
-            // Console.WriteLine(CombineError(tempColumn, tempRow));
-            
-            //Thread.Sleep(3000);
-            int result = CombineError(evalColumns, evalRows);
-            
-            //evalColumns = (int[])tempColumn.Clone();
-            //evalRows = (int[])tempRow.Clone();
             
             return result;
 

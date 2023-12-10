@@ -7,12 +7,12 @@ namespace SudokuKiller
     {
         static void Main()
         {
-            string[] input = Console.ReadLine().Split(" ");
-            Sudoku sudoku = ParseHelper.ParseSudoku(input);
-            Algoritme algorithm = new Algoritme(sudoku, 10000, 2, "best");
-            Console.WriteLine(algorithm.RunAlgoritme());
+            // string[] input = Console.ReadLine().Split(" ");
+            // Sudoku sudoku = ParseHelper.ParseSudoku(input);
+            // Algoritme algorithm = new Algoritme(sudoku, 10, 10, "best");
+            // Console.WriteLine(algorithm.RunAlgoritme());
 
-            //GetTestResults();
+            GetTestResults();
         }
 
         static void GetTestResults()
@@ -30,32 +30,41 @@ namespace SudokuKiller
         static void GenerateTestResults(string testName, string[] test, string path)
         {
             string newPath = Path.Combine(path, $@"..\{testName}.csv");
-            
+
             InstatiateFile(newPath);
-            Sudoku sudoku = ParseHelper.ParseSudoku(test);
-            
+
             string[] improvement = new[] { "best", "first" };
 
-            for (int i = 0; i < 20; i++)
+            using (StreamWriter sw = new StreamWriter(newPath))
             {
-                for (int j = 0; j < 20; j++)
+                string headers = "RunTime,RandomWalkLength,RandomWalkStart,Improvement";
+                sw.WriteLine(headers);
+                
+                for (int i = 5; i < 6; i++)
                 {
-                    foreach (var type in improvement)
+                    for (int j = 5; j < 6; j++)
                     {
-                        Stopwatch stopwatch = new Stopwatch();
-                        Algoritme algorithm = new Algoritme(sudoku, i, j, type);
-                        
-                        stopwatch.Start();
-                        algorithm.RunAlgoritme();
-                        stopwatch.Stop();
+                        foreach (var type in improvement)
+                        {
+                            long time = GetResult(new Algoritme(ParseHelper.ParseSudoku(test), i, j, type));
 
-                        string text = $"\n{stopwatch.ElapsedMilliseconds},{j},{i},{type}";
-                        
-                        File.AppendAllText(newPath, text);
+                            string text = $"{time},{j},{i},{type}";
 
+                            sw.WriteLine(text);
+                        }
                     }
                 }
             }
+        }
+
+        private static long GetResult(Algoritme algorithm)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            algorithm.RunAlgoritme();
+            stopwatch.Stop();
+            
+            return stopwatch.ElapsedMilliseconds;
         }
 
         private static void InstatiateFile(string newPath)
@@ -67,7 +76,6 @@ namespace SudokuKiller
             File.Create(newPath).Close();
 
             string headers = "RunTime,RandomWalkLength,RandomWalkStart,Improvement";
-            File.WriteAllText(newPath, headers);
         }
     }
 }
