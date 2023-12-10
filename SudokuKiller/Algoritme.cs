@@ -15,12 +15,14 @@ namespace SudokuKiller
         int randomWalkLength;
         int counter = 0;
         int randomWalkStart;
+        bool improvement;
 
-        public Algoritme(Sudoku sudoku, int lengte)
+        public Algoritme(Sudoku sudoku, int randomwalkstart, int randomwalklength, string type)
         {
             this.sudoku = sudoku;
-            randomWalkLength = lengte;
-            randomWalkStart = 100000;
+            randomWalkStart = randomwalkstart;
+            randomWalkLength = randomwalklength;
+            improvement = (type == "best") ? true : false;
         }
         public string RunAlgoritme()
         {
