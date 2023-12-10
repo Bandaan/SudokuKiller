@@ -27,14 +27,9 @@ namespace SudokuKiller
         public string RunAlgoritme()
         {
             evalSudoku = InstantiateEval();
-            Console.WriteLine($"begin fout: {evalSudoku}");
+            //Console.WriteLine($"begin fout: {evalSudoku}");
             while (evalSudoku != 0)
             {
-                if (counter == 1000)
-                {
-                    Console.WriteLine($"echte error {InstantiateEval()} :: onze error {evalSudoku}");
-                    Thread.Sleep(10000);
-                }
                 MiniSudoku miniSudoku = sudoku.GetRandomMiniSudoku();
                 Swap smallestSwap = SwapSuggest(miniSudoku);
                 
@@ -51,7 +46,7 @@ namespace SudokuKiller
                     }
                     
                     miniSudoku.Swap(smallestSwap.pos1, smallestSwap.pos2);
-                    SetErrors(evalColumns, evalRows, smallestSwap.pos1.error, smallestSwap.pos2.error);
+                    //SetErrors(evalColumns, evalRows, smallestSwap.pos1.error, smallestSwap.pos2.error);
                     evalSudoku = smallestSwap.eval;
                 }
                 else
@@ -88,7 +83,7 @@ namespace SudokuKiller
                 Swap swap = RandomSwap(miniSudoku);
                 
                 miniSudoku.Swap(swap.pos1, swap.pos2);
-                SetErrors(evalColumns, evalRows, swap.pos1.error, swap.pos2.error);
+                //SetErrors(evalColumns, evalRows, swap.pos1.error, swap.pos2.error);
                 evalSudoku = swap.eval;
                 
             }
@@ -181,15 +176,9 @@ namespace SudokuKiller
                                 Coordinaat getal2 = new Coordinaat(j, i);
 
                                 miniSudoku.Swap(getal1, getal2);
-                                int newEval = FindEval(getal1, getal2, miniSudoku);
+                                //int newEval = FindEval(getal1, getal2, miniSudoku);
 
-                                // for (int m = 0; m < 9; m++)
-                                // {
-                                //     Console.WriteLine(evalColumns[m] + " " + evalRows[m]);
-                                // }
-                                //
-                                // Console.WriteLine("====================");
-                                //Thread.Sleep((3000));
+                                int newEval = InstantiateEval();
                                 
                                 if (newEval < smallestElement.eval)
                                 {
@@ -208,8 +197,10 @@ namespace SudokuKiller
         private Swap RandomSwap(MiniSudoku miniSudoku)
         {
             Tuple<Coordinaat, Coordinaat> swap = miniSudoku.GetRandomSwap();
-            int eval = FindEval(swap.Item1, swap.Item2, miniSudoku);
+            //int eval = FindEval(swap.Item1, swap.Item2, miniSudoku);
 
+            int eval = InstantiateEval();
+            
             return new Swap(eval, swap.Item1, swap.Item2);
 
         }
