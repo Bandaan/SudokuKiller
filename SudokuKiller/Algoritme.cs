@@ -18,17 +18,15 @@ namespace SudokuKiller
         int randomWalkStart;
         bool improvement;
         Stopwatch stopwatch = new Stopwatch();
-        private int number;
 
-        public Algoritme(Sudoku sudoku, int randomwalkstart, int randomwalklength, string type, int poep)
+        public Algoritme(Sudoku sudoku, int randomwalkstart, int randomwalklength, string type)
         {
             this.sudoku = sudoku;
             randomWalkStart = randomwalkstart;
             randomWalkLength = randomwalklength;
             improvement = (type == "best") ? true : false;
-            number = poep;
         }
-        public async Task<Tuple<long, string>> RunAlgoritme()
+        public async Task<Tuple<long, string, int, int, string>> RunAlgoritme()
         {
             Console.WriteLine($"runt met {randomWalkLength} en {randomWalkStart}");
             
@@ -39,8 +37,8 @@ namespace SudokuKiller
             {
                 if (stopwatch.ElapsedMilliseconds > 60000)
                 {
-                    Console.WriteLine("duurt langer dan 60");
-                    return await Task.FromResult(new Tuple<long, string>(stopwatch.ElapsedMilliseconds, SudokuToString()));
+                    break;
+                    
                 }
                 
                 MiniSudoku miniSudoku = sudoku.GetRandomMiniSudoku();
@@ -76,8 +74,7 @@ namespace SudokuKiller
             }
             
             stopwatch.Stop();
-            
-            return await Task.FromResult(new Tuple<long, string>(stopwatch.ElapsedMilliseconds, SudokuToString()));
+            return await Task.FromResult(new Tuple<long, string, int, int, string>(stopwatch.ElapsedMilliseconds, SudokuToString(), randomWalkLength, randomWalkStart, improvement ? "best" : "first"));
         }
 
         private void SetErrors(int[] columnError, int[] rowError, Error punt1, Error punt2)
