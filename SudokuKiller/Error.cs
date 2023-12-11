@@ -1,5 +1,8 @@
 namespace SudokuKiller
 {
+    /// <summary>
+    /// Represents a helper class that defines the errors in a certain column and row.
+    /// </summary>
     public class Error
     {
         public int columIndex;

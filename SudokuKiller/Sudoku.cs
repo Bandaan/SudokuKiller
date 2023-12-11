@@ -1,5 +1,8 @@
 ﻿namespace SudokuKiller
 {
+    /// <summary>
+    /// Represents a helper class that stores the entire sudoku.
+    /// </summary>
     public class Sudoku
     {
         public MiniSudoku[,] SudokuList = new MiniSudoku[3, 3];

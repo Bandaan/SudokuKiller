@@ -7,6 +7,9 @@ using System.Runtime.InteropServices.JavaScript;
 
 namespace SudokuKiller
 {
+    /// <summary>
+    /// Represents a class that runs the hill-climbing/ random walk algorithm on the sudoku.
+    /// </summary>
     public class Algoritme
     {
         Sudoku sudoku;
