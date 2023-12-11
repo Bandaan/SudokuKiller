@@ -11,7 +11,6 @@ namespace SudokuKiller
         int evalSudoku = -1;
         int[] evalColumns = new int[9];
         int[] evalRows = new int[9];
-        Random rnd;
         int randomWalkLength;
         int counter = 0;
         int randomWalkStart;
@@ -162,23 +161,31 @@ namespace SudokuKiller
             {
                 for (int j = 0; j < 3; j++)
                 {
+                    if (miniSudoku.MiniSudokuList[j, i].vast)
+                    {
+                        continue;
+                    }
                     for (int k = 0; k < 3; k++)
                     {
                         for (int l = 0; l < 3; l++)
                         {
-                            if (miniSudoku.MiniSudokuList[j, i].number != miniSudoku.MiniSudokuList[l, k].number && !miniSudoku.MiniSudokuList[l, k].vast && !miniSudoku.MiniSudokuList[j, i].vast)
+                            if (miniSudoku.MiniSudokuList[j, i].number != miniSudoku.MiniSudokuList[l, k].number && !miniSudoku.MiniSudokuList[l, k].vast)
                             {
                                 Coordinaat getal1 = new Coordinaat(l, k);
                                 Coordinaat getal2 = new Coordinaat(j, i);
 
                                 miniSudoku.Swap(getal1, getal2);
                                 int newEval = FindEval(getal1, getal2, miniSudoku);
+                                miniSudoku.Swap(getal2, getal1);
 
-                                if (newEval < smallestElement.eval)
+                                if (!improvement && newEval < evalSudoku)
+                                {
+                                    return new Swap(newEval, getal1, getal2);
+                                }
+                                else if (newEval < smallestElement.eval)
                                 {
                                     smallestElement = new Swap(newEval, getal1, getal2);
                                 }
-                                miniSudoku.Swap(getal2, getal1);
                             }
                         }
                     }
@@ -205,9 +212,16 @@ namespace SudokuKiller
             for (int i = 0; i < 9; i++)
             {
                 int[] row = sudoku.GetRow(i);
-                foreach (int j in row)
+                for (int j = 0; j < row.Length; j++)
                 {
-                    sudokuString += $" {j}";
+                    if (j == 0)
+                    {
+                        sudokuString += row[j];
+                    }
+                    else
+                    {
+                        sudokuString += $" {row[j]}";
+                    }
                 }
                 sudokuString += "\n";
             }
