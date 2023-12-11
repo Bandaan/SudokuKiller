@@ -7,12 +7,12 @@ namespace SudokuKiller
     {
         static void Main()
         {
-            // string[] input = Console.ReadLine().Split(" ");
-            // Sudoku sudoku = ParseHelper.ParseSudoku(input);
-            // Algoritme algorithm = new Algoritme(sudoku, 10, 10, "best");
-            // Console.WriteLine(algorithm.RunAlgoritme());
+            string[] input = Console.ReadLine().Split(" ");
+            Sudoku sudoku = ParseHelper.ParseSudoku(input);
+            Algoritme algorithm = new Algoritme(sudoku, 5, 2, "best");
+            Console.WriteLine(algorithm.RunAlgoritme().Result.Item2);
 
-            GetTestResults();
+            // GetTestResults();
         }
 
         static void GetTestResults()
@@ -26,46 +26,53 @@ namespace SudokuKiller
                 GenerateTestResults(lines[i].Replace(" ", string.Empty), lines[i + 1].Split(" "), newPath);
             }
         }
-
-        static void GenerateTestResults(string testName, string[] test, string path)
+        
+        static async Task RunTest(string[] test, string newPath)
         {
-            string newPath = Path.Combine(path, $@"..\{testName}.csv");
-
-            InstatiateFile(newPath);
-
             string[] improvement = new[] { "best", "first" };
+            var tasks = new List<Task<Tuple<long, string, int, int, string>>>();
 
+            int index = 0;
+            Parallel.ForEach(Enumerable.Range(1, 40), i =>
+            {
+                Parallel.ForEach(Enumerable.Range(1, 40), j =>
+                {
+                    foreach (var type in improvement)
+                    {
+                        tasks.Add(new Algoritme(ParseHelper.ParseSudoku(test), i, j, type).RunAlgoritme());
+                    }
+                });
+            });
+            
             using (StreamWriter sw = new StreamWriter(newPath))
             {
                 string headers = "RunTime,RandomWalkLength,RandomWalkStart,Improvement";
                 sw.WriteLine(headers);
                 
-                for (int i = 5; i < 6; i++)
+                foreach (var task in await Task.WhenAll(tasks))
                 {
-                    for (int j = 5; j < 6; j++)
+                    if (task.Item1 > 60000)
                     {
-                        foreach (var type in improvement)
-                        {
-                            long time = GetResult(new Algoritme(ParseHelper.ParseSudoku(test), i, j, type));
-
-                            string text = $"{time},{j},{i},{type}";
-
-                            sw.WriteLine(text);
-                        }
+                        sw.WriteLine($"N/E,{task.Item3},{task.Item4},{task.Item5}");
+                    }
+                    else
+                    {
+                        sw.WriteLine($"{task.Item1},{task.Item3},{task.Item4},{task.Item5}");
                     }
                 }
+
             }
+
         }
 
-        private static long GetResult(Algoritme algorithm)
+        static async void GenerateTestResults(string testName, string[] test, string path)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            algorithm.RunAlgoritme();
-            stopwatch.Stop();
-            
-            return stopwatch.ElapsedMilliseconds;
+            string newPath = Path.Combine(path, $@"..\{testName}.csv");
+
+            InstatiateFile(newPath);
+            await RunTest(test, newPath);
         }
+        
 
         private static void InstatiateFile(string newPath)
         {

@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime;
+using System.Runtime.InteropServices.JavaScript;
 
 namespace SudokuKiller
 {
@@ -15,6 +17,7 @@ namespace SudokuKiller
         int counter = 0;
         int randomWalkStart;
         bool improvement;
+        Stopwatch stopwatch = new Stopwatch();
 
         public Algoritme(Sudoku sudoku, int randomwalkstart, int randomwalklength, string type)
         {
@@ -23,17 +26,24 @@ namespace SudokuKiller
             randomWalkLength = randomwalklength;
             improvement = (type == "best") ? true : false;
         }
-        public string RunAlgoritme()
+        public async Task<Tuple<long, string, int, int, string>> RunAlgoritme()
         {
+            Console.WriteLine($"runt met {randomWalkLength} en {randomWalkStart}");
+            
+            stopwatch.Start();
             evalSudoku = InstantiateEval();
-
+            
             while (evalSudoku != 0)
             {
+                if (stopwatch.ElapsedMilliseconds > 60000)
+                {
+                    break;
+                    
+                }
+                
                 MiniSudoku miniSudoku = sudoku.GetRandomMiniSudoku();
                 Swap smallestSwap = SwapSuggest(miniSudoku);
-                
-                //Console.WriteLine($"Kleiner swap ={smallestSwap.eval} evalsudoku = {evalSudoku}");
-                
+
                 if (smallestSwap.eval <= evalSudoku)
                 {
                     if (smallestSwap.eval == evalSudoku)
@@ -63,8 +73,8 @@ namespace SudokuKiller
                 }
             }
             
-            Console.WriteLine("klaar");
-            return SudokuToString();
+            stopwatch.Stop();
+            return await Task.FromResult(new Tuple<long, string, int, int, string>(stopwatch.ElapsedMilliseconds, SudokuToString(), randomWalkLength, randomWalkStart, improvement ? "best" : "first"));
         }
 
         private void SetErrors(int[] columnError, int[] rowError, Error punt1, Error punt2)
@@ -182,7 +192,8 @@ namespace SudokuKiller
                                 {
                                     return new Swap(newEval, getal1, getal2);
                                 }
-                                else if (newEval < smallestElement.eval)
+                                
+                                if (newEval < smallestElement.eval)
                                 {
                                     smallestElement = new Swap(newEval, getal1, getal2);
                                 }
