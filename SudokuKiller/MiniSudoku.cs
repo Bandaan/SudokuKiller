@@ -2,6 +2,9 @@
 
 namespace SudokuKiller
 {
+    /// <summary>
+    /// Represents a helper class that stores a 3x3 grid of cells from the sudoku.
+    /// </summary>
     public class MiniSudoku
     {
         public Getal[,] MiniSudokuList = new Getal[3, 3];
