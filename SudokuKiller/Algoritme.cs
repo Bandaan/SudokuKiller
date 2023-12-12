@@ -19,6 +19,15 @@ namespace SudokuKiller
         bool logSudoku;
         Stopwatch stopwatch = new Stopwatch();
 
+        /// <summary>
+        /// Calculates all the blocks and parses to sudoku.
+        /// </summary>
+        /// <param name="sudoku">Sudoku object.</param>
+        /// <param name="randomwalkstart">Number of repetitions of the same evalSudoku before entering a random walk.</param>
+        /// <param name="randomwalklength">Number of repititions a random swap is executed in a random walk.</param>
+        /// <param name="type">Either best (best improvement search) or first (first improvement search) deciding which algorithm should be used.</param>
+        /// <param name="maxtime">The maximum amount of time the algorithm is allowed to run for before aborting.</param>
+        /// <param name="logsudoku">Boolean that represents if the solved sudoku should be printed to the console or not.</param>
         public Algoritme(Sudoku sudoku, int randomwalkstart, int randomwalklength, string type, long maxtime, bool logsudoku)
         {
             this.sudoku = sudoku;
@@ -28,6 +37,7 @@ namespace SudokuKiller
             maxTime = maxtime;
             logSudoku = logsudoku;
         }
+
         public async Task<Tuple<long, string, int, int, string>> RunAlgoritme()
         {
             ConsoleHelper.BeginLog(randomWalkLength, randomWalkStart, improvement ? "best" : "first");
@@ -78,6 +88,13 @@ namespace SudokuKiller
             return await Task.FromResult(new Tuple<long, string, int, int, string>(stopwatch.ElapsedMilliseconds, ConsoleHelper.SudokuToString(sudoku), randomWalkLength, randomWalkStart, improvement ? "best" : "first"));
         }
 
+        /// <summary>
+        /// Sets the errors of specific columns and rows.
+        /// </summary>
+        /// <param name="columnError">Array containing the number of errors for each column.</param>
+        /// <param name="rowError">Array containing the number of errors for each row.</param>
+        /// <param name="punt1">Error object containing the column, row and their respective updated errors of the first point.</param>
+        /// <param name="punt2">Error object containing the column, row and their respective updated errors of the second point.</param>
         private void SetErrors(int[] columnError, int[] rowError, Error punt1, Error punt2)
         {
             columnError[punt1.columIndex] = punt1.columnError;
@@ -87,6 +104,9 @@ namespace SudokuKiller
             rowError[punt2.rowIndex] = punt2.rowError;
         }
 
+        /// <summary>
+        /// Performs a number (stored in randomWalkLength) of random swaps in random mini sudoku's and updates the errors and evaluation of the sudoku.
+        /// </summary>
         private void RandomWalk()
         {
             for (int i = 0; i < randomWalkLength; i++)
@@ -102,6 +122,10 @@ namespace SudokuKiller
             }
         }
 
+        /// <summary>
+        /// Calculates the mistakes in each column and row of the sudoku.
+        /// </summary>
+        /// <returns>The combined number of mistakes in the sudoku</returns>
         private int InstantiateEval()
         {
             for (int i = 0; i < 9; i++)
@@ -112,6 +136,10 @@ namespace SudokuKiller
             return CombineError(evalColumns, evalRows);
         }
         
+        /// <summary>
+        /// Represents a helper method to combine the errors stored in 2 arrays.
+        /// </summary>
+        /// <returns>The combined number of mistakes in the sudoku</returns>
         private int CombineError(int[] arrayColumns, int[] arrayRows)
         {
             int error = 0;
@@ -124,6 +152,13 @@ namespace SudokuKiller
             return error;
         }
 
+        /// <summary>
+        /// Temporarily updates the amount of mistakes in the columns and rows of point 1 and 2 to calculate the evaluation of the sudoku this swap gives us
+        /// </summary>
+        /// <param name="punt1">Coordinaat object which represents the first swapped cell's location and error.</param>
+        /// <param name="punt2">Coordinaat object which represents the second swapped cell's location and error.</param>
+        /// <param name="miniSudoku">MiniSudoku object to help with finding the location of point 1 and 2 in the sudoku</param>
+        /// <returns>The combined number of mistakes in this temporary configuration of the sudoku</returns>
         private int FindEval(Coordinaat punt1, Coordinaat punt2, MiniSudoku miniSudoku)
         {
             int column1 = miniSudoku.column * 3 + punt1.column;
@@ -149,6 +184,11 @@ namespace SudokuKiller
 
         }
 
+        /// <summary>
+        /// Calculates the amount of unique numbers there are in an array to find how many are missing
+        /// </summary>
+        /// <param name="array">An array which is either a column or a row from the sudoku</param>
+        /// <returns>The number of missing numbers from 1-9</returns>
         public static int FindError(int[] array)
         {
             List<int> tempArray = new List<int>();
@@ -164,6 +204,11 @@ namespace SudokuKiller
             return 9-tempArray.Count;
         }
         
+        /// <summary>
+        /// Gives depending on the improvement bool either the swap that gives the lowest evalSudoku or the swap that gives the first improvement on evalSudoku
+        /// </summary>
+        /// <param name="miniSudoku">MiniSudoku object to swap numbers in</param>
+        /// <returns>The number of missing numbers from 1-9</returns>
         private Swap SwapSuggest(MiniSudoku miniSudoku)
         {
             Swap smallestElement = new Swap(int.MaxValue, null, null);
@@ -207,6 +252,11 @@ namespace SudokuKiller
             return smallestElement;
         }
 
+        /// <summary>
+        /// Performs a random swap in the given MiniSudoku and updates the new evaluation and column and row errors
+        /// </summary>
+        /// <param name="miniSudoku">MiniSudoku object to randomly swap numbers in</param>
+        /// <returns>A swap object containing the random swap and it's error</returns>
         private Swap RandomSwap(MiniSudoku miniSudoku)
         {
             Tuple<Coordinaat, Coordinaat> swap = miniSudoku.GetRandomSwap();
