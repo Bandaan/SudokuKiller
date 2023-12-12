@@ -1,9 +1,4 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime;
-using System.Runtime.InteropServices.JavaScript;
 
 namespace SudokuKiller
 {
@@ -17,31 +12,33 @@ namespace SudokuKiller
         int[] evalColumns = new int[9];
         int[] evalRows = new int[9];
         int randomWalkLength;
-        int counter = 0;
+        int counter;
         int randomWalkStart;
         bool improvement;
+        long maxTime;
+        bool logSudoku;
         Stopwatch stopwatch = new Stopwatch();
 
-        public Algoritme(Sudoku sudoku, int randomwalkstart, int randomwalklength, string type)
+        public Algoritme(Sudoku sudoku, int randomwalkstart, int randomwalklength, string type, long maxtime, bool logsudoku)
         {
             this.sudoku = sudoku;
             randomWalkStart = randomwalkstart;
             randomWalkLength = randomwalklength;
             improvement = (type == "best") ? true : false;
+            maxTime = maxtime;
+            logSudoku = logsudoku;
         }
         public async Task<Tuple<long, string, int, int, string>> RunAlgoritme()
         {
-            Console.WriteLine($"runt met {randomWalkLength} en {randomWalkStart}");
-            
+            ConsoleHelper.BeginLog(randomWalkLength, randomWalkStart, improvement ? "best" : "first");
             stopwatch.Start();
             evalSudoku = InstantiateEval();
             
             while (evalSudoku != 0)
             {
-                if (stopwatch.ElapsedMilliseconds > 60000)
+                if (stopwatch.ElapsedMilliseconds > maxTime)
                 {
                     break;
-                    
                 }
                 
                 MiniSudoku miniSudoku = sudoku.GetRandomMiniSudoku();
@@ -77,7 +74,8 @@ namespace SudokuKiller
             }
             
             stopwatch.Stop();
-            return await Task.FromResult(new Tuple<long, string, int, int, string>(stopwatch.ElapsedMilliseconds, SudokuToString(), randomWalkLength, randomWalkStart, improvement ? "best" : "first"));
+            ConsoleHelper.EndLog(stopwatch.ElapsedMilliseconds > maxTime, stopwatch.ElapsedMilliseconds, logSudoku, sudoku);
+            return await Task.FromResult(new Tuple<long, string, int, int, string>(stopwatch.ElapsedMilliseconds, ConsoleHelper.SudokuToString(sudoku), randomWalkLength, randomWalkStart, improvement ? "best" : "first"));
         }
 
         private void SetErrors(int[] columnError, int[] rowError, Error punt1, Error punt2)
@@ -218,29 +216,6 @@ namespace SudokuKiller
             return new Swap(eval, swap.Item1, swap.Item2);
 
         }
-
-        private string SudokuToString()
-        {
-            string sudokuString = "";
-
-            for (int i = 0; i < 9; i++)
-            {
-                int[] row = sudoku.GetRow(i);
-                for (int j = 0; j < row.Length; j++)
-                {
-                    if (j == 0)
-                    {
-                        sudokuString += row[j];
-                    }
-                    else
-                    {
-                        sudokuString += $" {row[j]}";
-                    }
-                }
-                sudokuString += "\n";
-            }
-
-            return sudokuString;
-        }
+        
     }
 }

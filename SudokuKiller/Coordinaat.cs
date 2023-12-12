@@ -1,5 +1,8 @@
 ﻿namespace SudokuKiller
 {
+    /// <summary>
+    /// Represents a helper class that stores coordinations for positions .
+    /// </summary>
     public class Coordinaat
     {
         public int column;

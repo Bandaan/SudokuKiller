@@ -5,11 +5,12 @@ namespace SudokuKiller
 {
     class Program
     {
+        
         static void Main()
         {
             string[] input = Console.ReadLine().Split(" ");
             Sudoku sudoku = ParseHelper.ParseSudoku(input);
-            Algoritme algorithm = new Algoritme(sudoku, 5, 2, "best");
+            Algoritme algorithm = new Algoritme(sudoku, 3, 3, "best", 60000, true);
             Console.WriteLine(algorithm.RunAlgoritme().Result.Item2);
 
             // GetTestResults();
@@ -39,7 +40,7 @@ namespace SudokuKiller
                 {
                     foreach (var type in improvement)
                     {
-                        tasks.Add(new Algoritme(ParseHelper.ParseSudoku(test), i, j, type).RunAlgoritme());
+                        tasks.Add(new Algoritme(ParseHelper.ParseSudoku(test), i, j, type, 6000,false).RunAlgoritme());
                     }
                 });
             });
