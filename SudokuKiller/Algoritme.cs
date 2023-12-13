@@ -38,6 +38,11 @@ namespace SudokuKiller
             logSudoku = logsudoku;
         }
 
+        /// <summary>
+        /// Calculates the mistake of the entire sudoku, then runs the algorithm while the mistake of the sudoku is not 0 and makes final swaps suggested if they're
+        /// smaller or equal to the current mistake in the sudoku. Also keeps track of platea's or local minima and decides to do a random walk.
+        /// </summary>
+        /// <returns>The time it took to solve the sudoku, the solved sudoku as a string and the settings used to solve the sudoku</returns>
         public async Task<Tuple<long, string, int, int, string>> RunAlgoritme()
         {
             ConsoleHelper.BeginLog(randomWalkLength, randomWalkStart, improvement ? "best" : "first");
@@ -153,7 +158,7 @@ namespace SudokuKiller
         }
 
         /// <summary>
-        /// Temporarily updates the amount of mistakes in the columns and rows of point 1 and 2 to calculate the evaluation of the sudoku this swap gives us
+        /// Temporarily updates the amount of mistakes in the columns and rows of point 1 and 2 to calculate the evaluation of the sudoku this swap gives us.
         /// </summary>
         /// <param name="punt1">Coordinaat object which represents the first swapped cell's location and error.</param>
         /// <param name="punt2">Coordinaat object which represents the second swapped cell's location and error.</param>
@@ -185,7 +190,7 @@ namespace SudokuKiller
         }
 
         /// <summary>
-        /// Calculates the amount of unique numbers there are in an array to find how many are missing
+        /// Calculates the amount of unique numbers there are in an array to find how many are missing.
         /// </summary>
         /// <param name="array">An array which is either a column or a row from the sudoku</param>
         /// <returns>The number of missing numbers from 1-9</returns>
@@ -205,7 +210,7 @@ namespace SudokuKiller
         }
         
         /// <summary>
-        /// Gives depending on the improvement bool either the swap that gives the lowest evalSudoku or the swap that gives the first improvement on evalSudoku
+        /// Gives depending on the improvement bool either the swap that gives the lowest evalSudoku or the swap that gives the first improvement on evalSudoku.
         /// </summary>
         /// <param name="miniSudoku">MiniSudoku object to swap numbers in</param>
         /// <returns>The number of missing numbers from 1-9</returns>
@@ -253,7 +258,7 @@ namespace SudokuKiller
         }
 
         /// <summary>
-        /// Performs a random swap in the given MiniSudoku and updates the new evaluation and column and row errors
+        /// Performs a random swap in the given MiniSudoku and updates the new evaluation and column and row errors.
         /// </summary>
         /// <param name="miniSudoku">MiniSudoku object to randomly swap numbers in</param>
         /// <returns>A swap object containing the random swap and it's error</returns>
