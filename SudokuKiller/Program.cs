@@ -11,12 +11,12 @@ namespace SudokuKiller
         
         static void Main()
         {
-            // string[] input = Console.ReadLine().Split(" ");
-            // Sudoku sudoku = ParseHelper.ParseSudoku(input);
-            // Algoritme algorithm = new Algoritme(sudoku, 3, 3, "best", 60000, true);
-            // Console.WriteLine(algorithm.RunAlgoritme().Result.Item2);
+            string[] input = Console.ReadLine().Split(" ");
+            Sudoku sudoku = ParseHelper.ParseSudoku(input);
+            Algorithm algorithm = new Algorithm(sudoku, 3, 3, "best", 60000, true);
+            Console.WriteLine(algorithm.RunAlgorithm().Result.Item2);
 
-            GetTestResults();
+            //GetTestResults();
         }
         
         /// <summary>
@@ -63,7 +63,7 @@ namespace SudokuKiller
                 {
                     foreach (var type in improvement)
                     {
-                        tasks.Add(new Algoritme(ParseHelper.ParseSudoku(test), i, j, type, 6000,false).RunAlgoritme());
+                        tasks.Add(new Algorithm(ParseHelper.ParseSudoku(test), i, j, type, 6000,false).RunAlgorithm());
                     }
                 });
             });

@@ -8,7 +8,7 @@ namespace SudokuKiller
     public class MiniSudoku
     {
         // Declare variables
-        public Getal[,] MiniSudokuList = new Getal[3, 3];
+        public Number[,] MiniSudokuList = new Number[3, 3];
         private int x, y;
         Random rnd;
         public int column, row;
@@ -26,11 +26,11 @@ namespace SudokuKiller
         /// <summary>
         /// Adds number to block
         /// </summary>
-        /// <param name="getal">Number</param>
-        public void AddGetal(Getal getal)
+        /// <param name="number">Number</param>
+        public void AddGetal(Number number)
         {
             // Place number in block array
-            MiniSudokuList[y, x] = getal;
+            MiniSudokuList[y, x] = number;
             // Increment indexes for next number
             IncrementIndices();
         }
@@ -101,11 +101,11 @@ namespace SudokuKiller
         public void Swap(Coordinaat left, Coordinaat right)
         {
             // Set temp to left coordinate
-            Getal tempGetal = MiniSudokuList[left.column, left.row];
+            Number tempNumber = MiniSudokuList[left.column, left.row];
             
             // Swap left and right coordinate
             MiniSudokuList[left.column, left.row] = MiniSudokuList[right.column, right.row];
-            MiniSudokuList[right.column, right.row] = tempGetal;
+            MiniSudokuList[right.column, right.row] = tempNumber;
         }
         
         /// <summary>
@@ -119,7 +119,7 @@ namespace SudokuKiller
             Coordinaat pos2 = new Coordinaat(0, 0);
             
             // Coordinates the same calculate new random coordinates
-            while (pos1.column == pos2.column && pos1.row == pos2.row || MiniSudokuList[pos1.column, pos1.row].vast || MiniSudokuList[pos2.column, pos2.row].vast)
+            while (pos1.column == pos2.column && pos1.row == pos2.row || MiniSudokuList[pos1.column, pos1.row].stuck || MiniSudokuList[pos2.column, pos2.row].stuck)
             {
                 // Get x, y by random between 0 and 2
                 pos1.column = rnd.Next(3);

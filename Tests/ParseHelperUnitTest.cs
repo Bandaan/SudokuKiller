@@ -32,13 +32,13 @@ namespace SudokuKiller.Tests
         public void TestFunc_ParseSudokuFillNumbers()
         {
 
-            void Check(Getal[,] actual, Getal[,] expected)
+            void Check(Number[,] actual, Number[,] expected)
             {
                 for (int i = 0; i < 3; i++)
                 {
                     for (int j = 0; j < 3; j++)
                     {
-                        Assert.AreEqual(actual[i, j].vast, expected[i, j].vast);
+                        Assert.AreEqual(actual[i, j].stuck, expected[i, j].stuck);
                         Assert.AreEqual(actual[i, j].number, expected[i, j].number);
                     }
                 }
@@ -46,20 +46,20 @@ namespace SudokuKiller.Tests
             }
             int[] actual1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-            Getal[,] expected1 = {
-                { new Getal(1, true) , new Getal(2, true), new Getal(3, true)},
-                { new Getal(4, true) , new Getal(5, true), new Getal(6, true)},
-                { new Getal(7, true) , new Getal(8, true), new Getal(9, true)}
+            Number[,] expected1 = {
+                { new Number(1, true) , new Number(2, true), new Number(3, true)},
+                { new Number(4, true) , new Number(5, true), new Number(6, true)},
+                { new Number(7, true) , new Number(8, true), new Number(9, true)}
             };
             
             Check(ParseHelper.FillNumbers(actual1).MiniSudokuList, expected1);
             
             int[] actual2 = { 0, 2, 3, 5, 8, 0, 0, 0, 1 };
 
-            Getal[,] expected2 = {
-                { new Getal(4, false) , new Getal(2, true), new Getal(3, true)},
-                { new Getal(5, true) , new Getal(8, true), new Getal(6, false)},
-                { new Getal(7, false) , new Getal(9, false), new Getal(1, true)}
+            Number[,] expected2 = {
+                { new Number(4, false) , new Number(2, true), new Number(3, true)},
+                { new Number(5, true) , new Number(8, true), new Number(6, false)},
+                { new Number(7, false) , new Number(9, false), new Number(1, true)}
             };
             
             Check(ParseHelper.FillNumbers(actual2).MiniSudokuList, expected2);
@@ -67,10 +67,10 @@ namespace SudokuKiller.Tests
             
             int[] actual3 = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-            Getal[,] expected3 = {
-                { new Getal(1, false) , new Getal(2, false), new Getal(3, false)},
-                { new Getal(4, false) , new Getal(5, false), new Getal(6, false)},
-                { new Getal(7, false) , new Getal(8, false), new Getal(9, false)}
+            Number[,] expected3 = {
+                { new Number(1, false) , new Number(2, false), new Number(3, false)},
+                { new Number(4, false) , new Number(5, false), new Number(6, false)},
+                { new Number(7, false) , new Number(8, false), new Number(9, false)}
             };
 
         }

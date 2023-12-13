@@ -74,8 +74,8 @@ public static class ParseHelper
             // If number not an zero than add to block with fixed to true
             // Else pick number from remaining numbers and add that to block with fixed false
             newMini.AddGetal((number != 0)
-                ? new Getal(number, true)
-                : new Getal(remainingNumbers[++index], false));
+                ? new Number(number, true)
+                : new Number(remainingNumbers[++index], false));
             // index + 1 to don't pick same number
         }
         
