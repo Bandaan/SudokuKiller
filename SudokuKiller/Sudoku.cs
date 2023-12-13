@@ -10,7 +10,6 @@
         private int x, y;
         private Random rnd;
         
-        
         /// <summary>
         /// Creates constructor.
         /// </summary>
@@ -20,6 +19,7 @@
             y = 0;
             rnd = new Random();
         }
+        
         /// <summary>
         /// Adds block to sudoku 
         /// </summary>
