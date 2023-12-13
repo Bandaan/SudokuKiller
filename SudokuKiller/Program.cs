@@ -11,12 +11,13 @@ namespace SudokuKiller
         
         static void Main()
         {
-            string[] input = Console.ReadLine().Split(" ");
-            Sudoku sudoku = ParseHelper.ParseSudoku(input);
-            Algorithm algorithm = new Algorithm(sudoku, 3, 3, "best", 60000, true);
-            Console.WriteLine(algorithm.RunAlgorithm().Result.Item2);
+            // string[] input = Console.ReadLine().Split(" ");
+            // Sudoku sudoku = ParseHelper.ParseSudoku(input);
+            // Algorithm algorithm = new Algorithm(sudoku, 3, 3, "best", 60000, true);
+            // Console.WriteLine(algorithm.RunAlgorithm().Result.Item2);
 
             //GetTestResults();
+            CalculateAverageRuntimes();
         }
         
         /// <summary>
@@ -122,6 +123,85 @@ namespace SudokuKiller
             }
             // Create file
             File.Create(newPath).Close();
+        }
+
+        private static void CalculateAverageRuntimes()
+        {
+            // Get the current path directory
+            var directory = Directory.GetCurrentDirectory();
+            // Calculate the path for the txt file where the test cases are in
+            string newPath = Path.GetFullPath(Path.Combine(directory, @"..\..\..\..\TestFiles"));
+
+            // Get all CSV files in the directory
+            string[] csvFiles = Directory.GetFiles(newPath, "*.csv");
+
+            // Creates a dictionary to store average runtimes for each combination of RandomWalkLength, RandomWalkStart, and Algorithm type
+            Dictionary<string, Tuple<double, int>> averageRuntimes = new Dictionary<string, Tuple<double, int>>();
+
+            // Loop through each CSV file
+            foreach (string csvFile in csvFiles)
+            {
+                // Read all lines from the CSV file
+                string[] lines = File.ReadAllLines(csvFile);
+
+                // Skip the first line
+                var dataLines = lines.Skip(1);
+
+                // Parse each line
+                foreach (var line in dataLines)
+                {
+                    // Split the line into words
+                    string[] words = line.Split(',');
+
+                    // Get values
+                    string runtimeString = words[0];
+                    int randomWalkLength = int.Parse(words[1]);
+                    int randomWalkStart = int.Parse(words[2]);
+                    string algorithm = words[3];
+
+                    if (runtimeString == "N/E")
+                    {
+                        continue;
+                    }
+
+                    double runtime = double.Parse(runtimeString);
+
+                    // Create a key for our dictionary which is the combination of values
+                    string key = $"{randomWalkLength},{randomWalkStart},{algorithm}";
+
+                    // Update or add the runtime value to the dictionary
+                    if (averageRuntimes.ContainsKey(key))
+                    {
+                        Tuple<double, int> currentAverage = averageRuntimes[key];
+                        double currentTotal = currentAverage.Item1;
+                        int count = currentAverage.Item2;
+
+                        // Update the average runtime and count
+                        averageRuntimes[key] = new Tuple<double, int>((currentTotal * count + runtime) / (count + 1), count + 1);
+                    }
+                    else
+                    {
+                        // If the key has not been added to the dictionary, add it with the first runtime
+                        averageRuntimes[key] = new Tuple<double, int>(runtime, 1);
+                    }
+                }
+            }
+
+            // Write results to output CSV file
+            using (StreamWriter sw = new StreamWriter(newPath))
+            {
+                // Add headers to csv file
+                string headers = "Average RunTime,RandomWalkLength,RandomWalkStart,Improvement";
+                sw.WriteLine(headers);
+
+                // Write the outputs
+                foreach (var output in averageRuntimes)
+                {
+                    sw.WriteLine($"{output.Value.Item1},{output.Key}");
+                }
+            }
+
+            Console.WriteLine($"Results written to {newPath}");
         }
     }
 }
