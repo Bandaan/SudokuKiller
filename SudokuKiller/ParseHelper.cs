@@ -37,8 +37,7 @@ public static class ParseHelper
     /// Finds the remaining numbers of a block.
     /// </summary>
     /// <param name="miniSudoku">Minisudoku (block) from sudoku.</param>
-    /// <returns>Remaining numbers between 1 till 9.</returns>
-    /// 
+    /// <returns>Remaining numbers between 1 till 9.</returns>/// 
     public static List<int> FindRemainingNumbers(int[] miniSoduku)
     {
         // Create list for remaining numbers
