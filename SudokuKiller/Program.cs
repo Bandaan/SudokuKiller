@@ -199,7 +199,7 @@ namespace SudokuKiller
                     int count = currentAverage.Item2;
 
                     // Update the average runtime and count
-                    averageRuntimes[key] = new Tuple<double, int>((currentTotal * count + runtime) / (count + 1), count + 1);
+                    averageRuntimes[key] = new Tuple<double, int>(Math.Round((currentTotal * count + runtime) / (count + 1)), count + 1);
                 }
                 else
                 {
@@ -235,7 +235,7 @@ namespace SudokuKiller
             // Write the outputs in the file
             foreach (var output in averageRuntimes)
             {
-                sw.WriteLine($"{output.Value.Item1}ms,{output.Key}");
+                sw.WriteLine($"{output.Value.Item1},{output.Key}");
             }
         }
 
