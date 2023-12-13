@@ -16,16 +16,20 @@ namespace SudokuKiller
             GetTestResults();
         }
 
-        static void GetTestResults()
+        static async void GetTestResults()
         {
             var directory = Directory.GetCurrentDirectory();
             string newPath = Path.GetFullPath(Path.Combine(directory, @"..\..\..\..\TestFiles\tests.txt"));
-
             string[] lines = File.ReadAllLines(newPath);
-            for (int i = 0; i < lines.Length; i += 2)
+            var tasks = new List<Task>();
+
+            Parallel.ForEach(Enumerable.Range(0, lines.Length / 2), i =>
             {
-                GenerateTestResults(lines[i].Replace(" ", string.Empty), lines[i + 1].Split(" "), newPath);
-            }
+                int index = i * 2;
+                tasks.Add(GenerateTestResults(lines[index].Replace(" ", string.Empty), lines[index + 1].Split(" "), newPath));
+            });
+
+            await Task.WhenAll(tasks);
         }
         
         static async Task RunTest(string[] test, string newPath)
@@ -40,7 +44,7 @@ namespace SudokuKiller
                 {
                     foreach (var type in improvement)
                     {
-                        tasks.Add(new Algoritme(ParseHelper.ParseSudoku(test), i, j, type, 60000,false).RunAlgoritme());
+                        tasks.Add(new Algoritme(ParseHelper.ParseSudoku(test), i, j, type, 120000,false).RunAlgoritme());
                     }
                 });
             });
@@ -66,7 +70,7 @@ namespace SudokuKiller
 
         }
 
-        static async void GenerateTestResults(string testName, string[] test, string path)
+        static async Task GenerateTestResults(string testName, string[] test, string path)
         {
             string newPath = Path.Combine(path, $@"..\{testName}.csv");
 
@@ -82,8 +86,6 @@ namespace SudokuKiller
                 File.Delete(newPath);
             }
             File.Create(newPath).Close();
-
-            string headers = "RunTime,RandomWalkLength,RandomWalkStart,Improvement";
         }
     }
 }

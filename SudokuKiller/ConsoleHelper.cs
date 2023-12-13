@@ -40,8 +40,8 @@
                 // Task is executed in given time log task executed in green.
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.WriteLine($"[{DateTime.Now.ToString("h:mm:ss tt").Split(" ")[0]}]-[Task-{Task.CurrentId}] Executed in {time} Milliseconds ");
-                // Set color back to white
                 Console.ForegroundColor = ConsoleColor.White;
+                // Set color back to white
                 if (log)
                 {
                     // Sudoku logs out to console.
@@ -90,6 +90,7 @@
                     sudokuString += "+-----------------------+\n";
                 }
             }
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(sudokuString);
         }
         
