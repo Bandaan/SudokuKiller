@@ -7,6 +7,7 @@ namespace SudokuKiller
     /// </summary>
     public class Algoritme
     {
+        // Declare variables
         Sudoku sudoku;
         int evalSudoku = -1;
         int[] evalColumns = new int[9];
@@ -45,42 +46,54 @@ namespace SudokuKiller
         /// <returns>The time it took to solve the sudoku, the solved sudoku as a string and the settings used to solve the sudoku</returns>
         public async Task<Tuple<long, string, int, int, string>> RunAlgoritme()
         {
+            // Prints start log to console and starts timer
             ConsoleHelper.BeginLog(randomWalkLength, randomWalkStart, improvement ? "best" : "first");
             stopwatch.Start();
+
+            // Calculates the mistake in the entire sudoku
             evalSudoku = InstantiateEval();
             
+            // Runs the algorithm while the mistake in the sudoku is not 0
             while (evalSudoku != 0)
             {
+                // Stops the algorithm if it took longer than the maxTime
                 if (stopwatch.ElapsedMilliseconds > maxTime)
                 {
                     break;
                 }
                 
+                // Picks a random MiniSudoku and finds the swap resulting in the smallest mistake in the sudoku
                 MiniSudoku miniSudoku = sudoku.GetRandomMiniSudoku();
                 Swap smallestSwap = SwapSuggest(miniSudoku);
 
+                // Checks if the mistake from the smallest swap is less or more than the current mistake in the sudoku
                 if (smallestSwap.eval <= evalSudoku)
                 {
+                    // If the mistake is equal to the current mistake in the sudoku we add to the counter
                     if (smallestSwap.eval == evalSudoku)
                     {
                         counter++;
                     }
+                    // Otherwise we reset the counter
                     else
                     {
                         counter = 0;
                     }
                     
+                    // We actually make the swap in the sudoku and update the sudoku's errors since this results in either a lower or equal mistake
                     miniSudoku.Swap(smallestSwap.pos1, smallestSwap.pos2);
                     
                     
                     SetErrors(evalColumns, evalRows, smallestSwap.pos1.error, smallestSwap.pos2.error);
                     evalSudoku = smallestSwap.eval;
                 }
+                // If the mistake is bigger than the current mistake in the sudoku we add to the counter
                 else
                 {
                     counter++;
                 }
 
+                // If the counter is equal to randomWalkStart we start a random walk and reset the timer
                 if (counter >= randomWalkStart)
                 {
                     counter = 0;
@@ -88,6 +101,7 @@ namespace SudokuKiller
                 }
             }
             
+            // Stops the timer and returns all the results
             stopwatch.Stop();
             ConsoleHelper.EndLog(stopwatch.ElapsedMilliseconds > maxTime, stopwatch.ElapsedMilliseconds, logSudoku, sudoku);
             return await Task.FromResult(new Tuple<long, string, int, int, string>(stopwatch.ElapsedMilliseconds, ConsoleHelper.SudokuToString(sudoku), randomWalkLength, randomWalkStart, improvement ? "best" : "first"));
@@ -102,6 +116,7 @@ namespace SudokuKiller
         /// <param name="punt2">Error object containing the column, row and their respective updated errors of the second point.</param>
         private void SetErrors(int[] columnError, int[] rowError, Error punt1, Error punt2)
         {
+            // Sets the specific rows and columns to their specific updated errors
             columnError[punt1.columIndex] = punt1.columnError;
             columnError[punt2.columIndex] = punt2.columnError;
 
@@ -114,8 +129,10 @@ namespace SudokuKiller
         /// </summary>
         private void RandomWalk()
         {
+            // Performs the random walk for randomWalkLength's amount of times
             for (int i = 0; i < randomWalkLength; i++)
             {
+                // Picks a random MiniSudoku, makes a random swap and updates all the errors
                 MiniSudoku miniSudoku = sudoku.GetRandomMiniSudoku();
                 Swap swap = RandomSwap(miniSudoku);
                 
@@ -133,11 +150,15 @@ namespace SudokuKiller
         /// <returns>The combined number of mistakes in the sudoku</returns>
         private int InstantiateEval()
         {
+            // Loops through all rows and columns
             for (int i = 0; i < 9; i++)
             {
+                // Set the specific row and column's error to it's error
                 evalColumns[i] = FindError(sudoku.GetColumn(i));
                 evalRows[i] = FindError(sudoku.GetRow(i));
             }
+
+            // returns the value of CombineError for these updates evalColumns and evalRows
             return CombineError(evalColumns, evalRows);
         }
         
@@ -147,6 +168,7 @@ namespace SudokuKiller
         /// <returns>The combined number of mistakes in the sudoku</returns>
         private int CombineError(int[] arrayColumns, int[] arrayRows)
         {
+            // Adds up all the errors stored in evalColumns and evalRows
             int error = 0;
             for (int i = 0; i < arrayColumns.Length; i++)
             {
@@ -154,6 +176,7 @@ namespace SudokuKiller
                 error += arrayRows[i];
             }
 
+            // Returns this error as one int
             return error;
         }
 
@@ -166,25 +189,32 @@ namespace SudokuKiller
         /// <returns>The combined number of mistakes in this temporary configuration of the sudoku</returns>
         private int FindEval(Coordinaat punt1, Coordinaat punt2, MiniSudoku miniSudoku)
         {
+            // Calculates the right index from it's local scope in the MiniSudoku to it's global scope in the entire sudoku
             int column1 = miniSudoku.column * 3 + punt1.column;
             
             int row1 = miniSudoku.row * 3 + punt1.row;
             
+            // Sets point 1's error to a new error object and setting it using FindError, also storing the right index to easily update this later when making an actual swap
+            // in the sudoku
             punt1.error = new Error(row1, FindError(sudoku.GetColumn(row1)), column1, FindError(sudoku.GetRow(column1)));
             
+            // The same but for point 2
             int column2 = miniSudoku.column * 3 + punt2.column;
             int row2 = miniSudoku.row * 3 + punt2.row;
             
             punt2.error = new Error(row2, FindError(sudoku.GetColumn(row2)), column2, FindError(sudoku.GetRow(column2)));
 
+            // Creates a copy of our current evalColumns and evalRows to temporarily update the mistake in certain columns and rows and easily revert changes
             int[] tempColumn = (int[])evalColumns.Clone();
             int[] tempRow = (int[])evalRows.Clone();
             
+            // Updates the errors in these tempColumns and tempRows
             SetErrors(tempColumn, tempRow, punt1.error, punt2.error);
             
+            // Also calculates the combined mistake in the sudoku by calling CombineError
             int result = CombineError(tempColumn, tempRow);
             
-            
+            // Returns this mistake as one int
             return result;
 
         }
@@ -196,16 +226,20 @@ namespace SudokuKiller
         /// <returns>The number of missing numbers from 1-9</returns>
         public static int FindError(int[] array)
         {
+            // Creates an empty List to fill with unique numbers
             List<int> tempArray = new List<int>();
 
+            // Loops through the entire array (either a column or a row)
             for (int i = 0; i < array.Length; i++)
             {
+                // If the number is not yet in our list we add it to the list
                 if (!tempArray.Contains(array[i]))
                 {
                     tempArray.Add(array[i]);
                 }
             }
 
+            // We return 9 - the amount of unique elements in our list to get the amount of numbers missing from 1-9
             return 9-tempArray.Count;
         }
         
@@ -216,34 +250,47 @@ namespace SudokuKiller
         /// <returns>The number of missing numbers from 1-9</returns>
         private Swap SwapSuggest(MiniSudoku miniSudoku)
         {
+            // Creates a smallestElement to keep track of the swap holding the smallest mistake in the entire sudoku using int.MaxValue so all swaps will be smaller to begin with
             Swap smallestElement = new Swap(int.MaxValue, null, null);
             
+            // Loops through all columns in the MiniSudoku for the first cell
             for (int i = 0; i < 3; i++)
             {
+                // Loops through all rows in the MiniSudoku for the first cell
                 for (int j = 0; j < 3; j++)
                 {
+                    // If the first cell in this MiniSudoku is fixed it skips this iteration
                     if (miniSudoku.MiniSudokuList[j, i].vast)
                     {
                         continue;
                     }
+                    // Loops through all the columns from the column of the first cell for the second cell as to not do all swaps double
                     for (int k = 0; k < 3; k++)
                     {
+                        // Loops through all the rows from the row of the first cell for the second cell as to not do all swaps double
                         for (int l = 0; l < 3; l++)
                         {
+                            // If the second cell is not fixed and both cells are not the same we execute the swap
                             if (miniSudoku.MiniSudokuList[j, i].number != miniSudoku.MiniSudokuList[l, k].number && !miniSudoku.MiniSudokuList[l, k].vast)
                             {
+                                // Creates coordinate objects for both cells
                                 Coordinaat getal1 = new Coordinaat(l, k);
                                 Coordinaat getal2 = new Coordinaat(j, i);
 
+                                // Executes the swap, calculates the mistake in the sudoku and swaps back to not interfere with other swaps
                                 miniSudoku.Swap(getal1, getal2);
                                 int newEval = FindEval(getal1, getal2, miniSudoku);
                                 miniSudoku.Swap(getal2, getal1);
 
+                                // If first improvement has been selected in the algorithm we can return early if the mistake given by our new swap is lower
+                                // than the current mistake in the entire sudoku
                                 if (!improvement && newEval < evalSudoku)
                                 {
                                     return new Swap(newEval, getal1, getal2);
                                 }
                                 
+                                // If the mistake from the sudoku is lower than the one in smallestElement we change it to the current one and make a swap
+                                // object out of it to store the details about this swap
                                 if (newEval < smallestElement.eval)
                                 {
                                     smallestElement = new Swap(newEval, getal1, getal2);
@@ -254,6 +301,7 @@ namespace SudokuKiller
                 }
             }
 
+            //Returns the swap resulting in the smallest mistake in the sudoku
             return smallestElement;
         }
 
@@ -264,10 +312,13 @@ namespace SudokuKiller
         /// <returns>A swap object containing the random swap and it's error</returns>
         private Swap RandomSwap(MiniSudoku miniSudoku)
         {
+            // Gets the coordinates of 2 cells to swap by calling GetRandomSwap from a MiniSudoku
             Tuple<Coordinaat, Coordinaat> swap = miniSudoku.GetRandomSwap();
             
+            // Get's the new mistake in the entire sudoku by calling FindEval
             int eval = FindEval(swap.Item1, swap.Item2, miniSudoku);
 
+            // Returns a new swap object which holds 2 swapped objects and the mistake of the entire sudoku
             return new Swap(eval, swap.Item1, swap.Item2);
 
         }
