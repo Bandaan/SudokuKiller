@@ -5,15 +5,23 @@ namespace SudokuKiller
     /// </summary>
     public class Error
     {
-        public int columIndex;
-        public int columnError;
-        public int rowIndex;
-        public int rowError;
+        // Declare variables
+        public int columIndex { get; }
+        public int columnError { get; }
+        public int rowIndex { get; }
+        public int rowError { get; }
 
-        public Error(int columindex, int columerror, int rowindex, int rowerror)  
+        /// <summary>
+        /// Creates constructor.
+        /// </summary>
+        /// <param name="columnindex">Index of changed number in column error array.</param>
+        /// /// <param name="columnerror">Error number in column error array.</param>
+        /// /// <param name="rowindex">Index of changed number in row error array.</param>
+        /// /// /// <param name="rowerror">Error number in row error array.</param>
+        public Error(int columnindex, int columnerror, int rowindex, int rowerror)  
         {
-            columIndex = columindex;
-            columnError = columerror;
+            columIndex = columnindex;
+            columnError = columnerror;
             rowIndex = rowindex;
             rowError = rowerror;
         }

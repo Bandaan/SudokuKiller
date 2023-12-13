@@ -8,12 +8,12 @@ namespace SudokuKiller
         
         static void Main()
         {
-            string[] input = Console.ReadLine().Split(" ");
-            Sudoku sudoku = ParseHelper.ParseSudoku(input);
-            Algoritme algorithm = new Algoritme(sudoku, 3, 3, "best", 60000, true);
-            Console.WriteLine(algorithm.RunAlgoritme().Result.Item2);
+            // string[] input = Console.ReadLine().Split(" ");
+            // Sudoku sudoku = ParseHelper.ParseSudoku(input);
+            // Algoritme algorithm = new Algoritme(sudoku, 3, 3, "best", 60000, true);
+            // Console.WriteLine(algorithm.RunAlgoritme().Result.Item2);
 
-            // GetTestResults();
+            GetTestResults();
         }
 
         static void GetTestResults()
@@ -40,7 +40,7 @@ namespace SudokuKiller
                 {
                     foreach (var type in improvement)
                     {
-                        tasks.Add(new Algoritme(ParseHelper.ParseSudoku(test), i, j, type, 6000,false).RunAlgoritme());
+                        tasks.Add(new Algoritme(ParseHelper.ParseSudoku(test), i, j, type, 60000,false).RunAlgoritme());
                     }
                 });
             });
