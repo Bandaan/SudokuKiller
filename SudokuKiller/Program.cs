@@ -15,12 +15,12 @@ namespace SudokuKiller
         
         static void Main()
         {
-            string[] input = Console.ReadLine().Split(" ");
-            Sudoku sudoku = ParseHelper.ParseSudoku(input);
-            Algorithm algorithm = new Algorithm(sudoku, 3, 3, "best", 60000, true);
-            Console.WriteLine(algorithm.RunAlgorithm().Result.Item2);
+            // string[] input = Console.ReadLine().Split(" ");
+            // Sudoku sudoku = ParseHelper.ParseSudoku(input);
+            // Algorithm algorithm = new Algorithm(sudoku, 3, 3, "best", 60000, true);
+            // Console.WriteLine(algorithm.RunAlgorithm().Result.Item2);
 
-            GetTestResults();
+            // GetTestResults();
             CalculateAverageRuntimes();
         }
         
@@ -137,6 +137,13 @@ namespace SudokuKiller
             // Get the current path directory
             var directory = Directory.GetCurrentDirectory();
 
+            // Writing path
+            string path = Path.GetFullPath(Path.Combine(directory, @"..\..\..\..\TestFiles\tests.txt"));
+            string writingPath = Path.Combine(path, $@"..\Average_RunTime.csv");
+
+            // Create a new CSV file
+            InstantiateFile(writingPath);
+
             // Get path to TestFiles folder
             string newPath = Path.GetFullPath(Path.Combine(directory, @"..\..\..\..\TestFiles"));
 
@@ -147,99 +154,107 @@ namespace SudokuKiller
             Dictionary<string, Tuple<double, int>> averageRuntimes = ProcessFiles(csvFiles);
 
             // Call GenerateAverageTestResults to write the new data
-            GenerateAverageTestResults(averageRuntimes, directory);
+            GenerateAverageTestResults(averageRuntimes, writingPath);
         }
 
-    /// <summary>
-    /// Creates a dictionary with keys as the settings of the algorithm and values as new calculated averages of the run time skipping all N/E
-    /// </summary>
-    /// <param name="csvFiles">All csvFiles in the TestFiles folder</param>
-    /// <returns>A dictionary with the keys being the different settings of the algorithm and the values being the average run time</returns>
-    private static Dictionary<string, Tuple<double, int>> ProcessFiles(string[] csvFiles)
-    {
-        // Creates a dictionary to store average runtimes for each combination of RandomWalkLength, RandomWalkStart, and Algorithm type
-        Dictionary<string, Tuple<double, int>> averageRuntimes = new Dictionary<string, Tuple<double, int>>();
-
-        // Loop through each CSV file
-        foreach (string csvFile in csvFiles)
+        /// <summary>
+        /// Creates a dictionary with keys as the settings of the algorithm and values as new calculated averages of the run time skipping all N/E
+        /// </summary>
+        /// <param name="csvFiles">All csvFiles in the TestFiles folder</param>
+        /// <returns>A dictionary with the keys being the different settings of the algorithm and the values being the average run time</returns>
+        private static Dictionary<string, Tuple<double, int>> ProcessFiles(string[] csvFiles)
         {
-            // Read all lines from the CSV file
-            string[] lines = File.ReadAllLines(csvFile);
+            // Creates a dictionary to store average runtimes for each combination of RandomWalkLength, RandomWalkStart, and Algorithm type
+            Dictionary<string, Tuple<double, int>> averageRuntimes = new Dictionary<string, Tuple<double, int>>();
 
-            // Skip the headers
-            var dataLines = lines.Skip(1);
-
-            // Parse each line
-            foreach (var line in dataLines)
+            // Loop through each CSV file
+            foreach (string csvFile in csvFiles)
             {
-                // Split the line into words
-                string[] words = line.Split(',');
+                // Read all lines from the CSV file
+                string[] lines = File.ReadAllLines(csvFile);
 
-                // Get values
-                string runtimeString = words[0];
-                int randomWalkLength = int.Parse(words[1]);
-                int randomWalkStart = int.Parse(words[2]);
-                string algorithm = words[3];
+                // Skip the headers
+                var dataLines = lines.Skip(1);
 
-                if (runtimeString == "N/E")
+                // Keep track of run times with N/E in the file
+                HashSet<string> settingsWithNE = new HashSet<string>();
+
+                // Parse each line
+                foreach (var line in dataLines)
                 {
-                    continue;
+                    // Split the line into words
+                    string[] words = line.Split(',');
+
+                    // Get values
+                    string runtimeString = words[0];
+                    int randomWalkLength = int.Parse(words[1]);
+                    int randomWalkStart = int.Parse(words[2]);
+                    string algorithm = words[3];
+
+                    // Check if a run time is N/E and if so we want to remove that entry from the dictionary at the end entirely
+                    if (runtimeString == "N/E")
+                    {
+                        // Add the configuration to a hashset if it contains N/E
+                        settingsWithNE.Add($"{randomWalkLength},{randomWalkStart},{algorithm}");
+                        continue;
+                    }
+
+                    double runtime = double.Parse(runtimeString);
+
+                    // Create a key for our dictionary which is the combination of values
+                    string key = $"{randomWalkLength},{randomWalkStart},{algorithm}";
+
+                    // Update or add the runtime value to the dictionary
+                    if (averageRuntimes.ContainsKey(key))
+                    {
+                        Tuple<double, int> currentAverage = averageRuntimes[key];
+                        double currentTotal = currentAverage.Item1;
+                        int count = currentAverage.Item2;
+
+                        // Update the average runtime and count
+                        averageRuntimes[key] = new Tuple<double, int>(Math.Round((currentTotal * count + runtime) / (count + 1)), count + 1);
+                    }
+                    else
+                    {
+                        // If the key has not been added to the dictionary, add it with the first runtime
+                        averageRuntimes[key] = new Tuple<double, int>(runtime, 1);
+                    }
                 }
 
-                double runtime = double.Parse(runtimeString);
-
-                // Create a key for our dictionary which is the combination of values
-                string key = $"{randomWalkLength},{randomWalkStart},{algorithm}";
-
-                // Update or add the runtime value to the dictionary
-                if (averageRuntimes.ContainsKey(key))
+                // Remove the runs with that give N/E in one or more files from the dictionary
+                foreach (string setting in settingsWithNE)
                 {
-                    Tuple<double, int> currentAverage = averageRuntimes[key];
-                    double currentTotal = currentAverage.Item1;
-                    int count = currentAverage.Item2;
-
-                    // Update the average runtime and count
-                    averageRuntimes[key] = new Tuple<double, int>(Math.Round((currentTotal * count + runtime) / (count + 1)), count + 1);
-                }
-                else
-                {
-                    // If the key has not been added to the dictionary, add it with the first runtime
-                    averageRuntimes[key] = new Tuple<double, int>(runtime, 1);
+                    if (averageRuntimes.ContainsKey(setting))
+                    {
+                        averageRuntimes.Remove(setting);
+                    }
                 }
             }
+
+            return averageRuntimes;
         }
 
-        return averageRuntimes;
-    }
-
-    /// <summary>
-    /// Writes info of the given dictionary into a new file
-    /// </summary>
-    /// <param name="averageRuntimes">A dictionary with keys being the settings of the algorithms and values being the average run times</param>
-    /// <param name="directory">The directory path</param>
-    private static void GenerateAverageTestResults(Dictionary<string, Tuple<double, int>> averageRuntimes, string directory)
-    {
-        // Writing path
-        string newPath = Path.GetFullPath(Path.Combine(directory, @"..\..\..\..\TestFiles\tests.txt"));
-        string path = Path.Combine(newPath, $@"..\Average_RunTime.csv");
-
-        // Create a new CSV file
-        InstantiateFile(path);
-
-        using (StreamWriter sw = new StreamWriter(path))
+        /// <summary>
+        /// Writes info of the given dictionary into a new file
+        /// </summary>
+        /// <param name="averageRuntimes">A dictionary with keys being the settings of the algorithms and values being the average run times</param>
+        /// <param name="directory">The directory path</param>
+        private static void GenerateAverageTestResults(Dictionary<string, Tuple<double, int>> averageRuntimes, string path)
         {
-            // Add headers to csv file
-            string headers = "Average RunTime,RandomWalkLength,RandomWalkStart,Improvement";
-            sw.WriteLine(headers);
-
-            // Write the outputs in the file
-            foreach (var output in averageRuntimes)
+            using (StreamWriter sw = new StreamWriter(path))
             {
-                sw.WriteLine($"{output.Value.Item1},{output.Key}");
-            }
-        }
+                // Add headers to csv file
+                string headers = "Average RunTime,RandomWalkLength,RandomWalkStart,Improvement";
+                sw.WriteLine(headers);
 
-        Console.WriteLine($"Results written to {path}");
-    }
+                // Write the outputs in the file
+                foreach (var output in averageRuntimes)
+                {
+                    sw.WriteLine($"{output.Value.Item1},{output.Key}");
+                }
+            }
+
+            Console.WriteLine($"Results written to {path}");
+        }
     }
 }
