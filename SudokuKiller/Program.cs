@@ -15,12 +15,12 @@ namespace SudokuKiller
         
         static void Main()
         {
-            string[] input = Console.ReadLine().Split(" ");
-            Sudoku sudoku = ParseHelper.ParseSudoku(input);
-            Algorithm algorithm = new Algorithm(sudoku, 6, 5, "best", 60000, true);
-            Console.WriteLine(algorithm.RunAlgorithm().Result.Item2);
+            // string[] input = Console.ReadLine().Split(" ");
+            // Sudoku sudoku = ParseHelper.ParseSudoku(input);
+            // Algorithm algorithm = new Algorithm(sudoku, 6, 5, "best", 60000, true);
+            // Console.WriteLine(algorithm.RunAlgorithm().Result.Item2);
 
-            //GetTestResults();
+            GetTestResults();
             //CalculateAverageRuntimes();
         }
         
