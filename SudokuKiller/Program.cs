@@ -21,7 +21,7 @@ namespace SudokuKiller
             Console.WriteLine(algorithm.RunAlgorithm().Result.Item2);
 
             //GetTestResults();
-            //CalculateAverageRuntimes();
+            // CalculateAverageRuntimes();
         }
         
         /// <summary>
@@ -60,8 +60,7 @@ namespace SudokuKiller
             string[] improvement = new[] { "best", "first" };
             var tasks = new List<List<Task<Tuple<long, string, int, int, string>>>>();
             
-            // Compare each feature value and create a task for it
-            
+            // Compare each feature value and create a task for it and do each testcase 5 times
             {
                 Parallel.ForEach(Enumerable.Range(1, 40), i =>
                 {
@@ -90,6 +89,7 @@ namespace SudokuKiller
                 string headers = "RunTime,RandomWalkLength,RandomWalkStart,Improvement";
                 sw.WriteLine(headers);
                 
+                // Calculate average of 5 testcases
                 foreach (var task in tasks)
                 {
                     long randonWalkLength = 0;
@@ -106,14 +106,17 @@ namespace SudokuKiller
                         
                         if (subtask.Item1 > 60000)
                         {
+                            // If results takes longer than one minute add 400 minutes to the result.
                             averageTotal += 400000;
                         }
                         else
                         {
+                            // Else add the real runtime to result
                             averageTotal += subtask.Item1;
                         }
                         count++;
                     }
+                    // Divide result by count and write down in file
                     sw.WriteLine($"{averageTotal / count},{randonWalkLength},{randomWalkStart},{Improvement}");
                 }
             }
@@ -242,7 +245,7 @@ namespace SudokuKiller
     {
         // Writing path
         string newPath = Path.GetFullPath(Path.Combine(directory, @"..\..\..\..\TestFiles\tests.txt"));
-        string path = Path.Combine(newPath, $@"..\Average_RunTime.csv");
+        string path = Path.Combine(newPath, $@"..\Average_RunTimeWithout5.csv");
 
         // Create a new CSV file
         InstantiateFile(path);
