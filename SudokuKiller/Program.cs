@@ -17,11 +17,11 @@ namespace SudokuKiller
         {
             string[] input = Console.ReadLine().Split(" ");
             Sudoku sudoku = ParseHelper.ParseSudoku(input);
-            Algorithm algorithm = new Algorithm(sudoku, 3, 3, "best", 60000, true);
+            Algorithm algorithm = new Algorithm(sudoku, 6, 5, "best", 60000, true);
             Console.WriteLine(algorithm.RunAlgorithm().Result.Item2);
 
-            GetTestResults();
-            CalculateAverageRuntimes();
+            //GetTestResults();
+            //CalculateAverageRuntimes();
         }
         
         /// <summary>
@@ -58,21 +58,31 @@ namespace SudokuKiller
         {
             // Declare test features and initialize task list
             string[] improvement = new[] { "best", "first" };
-            var tasks = new List<Task<Tuple<long, string, int, int, string>>>();
+            var tasks = new List<List<Task<Tuple<long, string, int, int, string>>>>();
             
             // Compare each feature value and create a task for it
-            int index = 0;
-            Parallel.ForEach(Enumerable.Range(1, 40), i =>
-            {
-                Parallel.ForEach(Enumerable.Range(1, 40), j =>
-                {
-                    foreach (var type in improvement)
-                    {
-                        tasks.Add(new Algorithm(ParseHelper.ParseSudoku(test), i, j, type, 6000,false).RunAlgorithm());
-                    }
-                });
-            });
             
+            {
+                Parallel.ForEach(Enumerable.Range(1, 40), i =>
+                {
+                    Parallel.ForEach(Enumerable.Range(1, 40), j =>
+                    {
+                        foreach (var type in improvement)
+                        {
+                            var subTask = new List<Task<Tuple<long, string, int, int, string>>>();
+                            Parallel.ForEach(Enumerable.Range(0, 5), k =>
+                            {
+                                subTask.Add(new Algorithm(ParseHelper.ParseSudoku(test), i, j, type, 60000, false)
+                                    .RunAlgorithm());
+                            });
+                            
+                            tasks.Add(subTask);
+                        }
+                    });
+                });
+                
+            }
+
             // Write the testresults to a csv file
             using (StreamWriter sw = new StreamWriter(newPath))
             {
@@ -80,22 +90,33 @@ namespace SudokuKiller
                 string headers = "RunTime,RandomWalkLength,RandomWalkStart,Improvement";
                 sw.WriteLine(headers);
                 
-                foreach (var task in await Task.WhenAll(tasks))
+                foreach (var task in tasks)
                 {
-                    if (task.Item1 > 60000)
+                    long randonWalkLength = 0;
+                    long randomWalkStart = 0;
+                    string Improvement = "N/E";
+                    long averageTotal = 0;
+                    long count = 0;
+                    
+                    foreach (var subtask in await Task.WhenAll(task))
                     {
-                        // Task is not finished write N/E (not executed)
-                        sw.WriteLine($"N/E,{task.Item3},{task.Item4},{task.Item5}");
+                        randonWalkLength = subtask.Item3;
+                        randomWalkStart = subtask.Item4;
+                        Improvement = subtask.Item5;
+                        
+                        if (subtask.Item1 > 60000)
+                        {
+                            averageTotal += 400000;
+                        }
+                        else
+                        {
+                            averageTotal += subtask.Item1;
+                        }
+                        count++;
                     }
-                    else
-                    {
-                        // Task is executed write all the feature values
-                        sw.WriteLine($"{task.Item1},{task.Item3},{task.Item4},{task.Item5}");
-                    }
+                    sw.WriteLine($"{averageTotal / count},{randonWalkLength},{randomWalkStart},{Improvement}");
                 }
-
             }
-
         }
         
         /// <summary>
